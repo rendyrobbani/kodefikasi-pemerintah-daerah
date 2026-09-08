@@ -1,0 +1,30 @@
+{
+	"name": "rendyrobbani/kodefikasi-pemerintah-daerah",
+	"type": "project",
+	"license": "proprietary",
+	"autoload": {
+		"psr-4": {
+			"RendyRobbani\\Kodefikasi\\Pemda\\": "src/main"
+		}
+	},
+	"authors": [
+		{
+			"name": "Rendy Robbani",
+			"email": "rendyrobbani17@gmail.com"
+		}
+	],
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/rendyrobbani/php.git"
+		}
+	],
+	"require": {
+		"php": ">=8.5",
+		"ext-pdo": "*",
+		"ext-mbstring": "*",
+		"rendyrobbani/php": "1.1.1",
+		"setasign/fpdf": "^1.9",
+		"setasign/fpdi": "^2.6"
+	}
+}

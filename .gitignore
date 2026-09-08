@@ -1,0 +1,5 @@
+/.*/
+/cli/*/
+/vendor/
+
+.DS_Store
