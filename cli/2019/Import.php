@@ -1,7 +1,9 @@
 <?php
 
+use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanKabupatenEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanProvinsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Peraturan\Peraturan;
+use RendyRobbani\Kodefikasi\Pemda\Service\UrusanKabupatenService;
 use RendyRobbani\Kodefikasi\Pemda\Service\UrusanProvinsiService;
 use RendyRobbani\PHP\Application;
 use RendyRobbani\PHP\Connection\Connection;
@@ -13,9 +15,10 @@ require_once __DIR__ . "/../../vendor/autoload.php";
 Application::setConfig(__DIR__ . "/../../res/application.json");
 $connection = Application::getComponent(Connection::class);
 
-for ($i = 0; $i < 1; $i++) {
+for ($i = 0; $i < 2; $i++) {
 	$info = match ($i) {
 		0 => Application::getEntityInfo(UrusanProvinsiEntity::class),
+		1 => Application::getEntityInfo(UrusanKabupatenEntity::class),
 	};
 
 	for ($j = 0; $j < 2; $j++) {
@@ -54,6 +57,13 @@ for ($i = 0; $i < 1; $i++) {
 			$connection->exec($sql);
 		}
 
+		if ($j === 0) {
+			$sql = "alter table $connection->database.$tableName auto_increment = 0";
+			echo $sql . ";";
+			echo PHP_EOL;
+			$connection->exec($sql);
+		}
+
 		echo PHP_EOL;
 	}
 
@@ -65,7 +75,11 @@ for ($i = 0; $i < 1; $i++) {
 	switch ($i) {
 		case 0:
 			$service = Application::getComponent(UrusanProvinsiService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, $excel_files, true);
+			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "B"))), true);
+			break;
+		case 1:
+			$service = Application::getComponent(UrusanKabupatenService::class);
+			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "C"))), true);
 			break;
 	}
 
