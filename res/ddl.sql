@@ -121,3 +121,45 @@ create or replace table urusan_kabupaten_log (
 ) engine = innodb
   charset = utf8mb4
   collate = utf8mb4_unicode_ci;
+
+drop table if exists fungsi_log;
+drop table if exists fungsi;
+
+create or replace table fungsi (
+	id              varchar(255),
+	nomor_fungsi    tinyint,
+	nomor_subfungsi tinyint,
+	nama            varchar(255),
+	created_at      date,
+	created_by      varchar(255),
+	updated_at      date,
+	updated_by      varchar(255),
+	is_deleted      bit,
+	deleted_at      date,
+	deleted_by      varchar(255),
+	constraint ck_fungsi_01 check (id = concat_ws('-', nomor_fungsi, nomor_subfungsi)),
+	constraint ck_fungsi_02 check (nomor_fungsi is null or nomor_fungsi > 0),
+	constraint ck_fungsi_03 check (nomor_subfungsi is null or nomor_subfungsi > 0),
+	primary key (id)
+) engine = innodb
+  charset = utf8mb4
+  collate = utf8mb4_unicode_ci;
+
+create or replace table fungsi_log (
+	id              int auto_increment,
+	id_reference    varchar(255),
+	nomor_fungsi    tinyint,
+	nomor_subfungsi tinyint,
+	nama            varchar(255),
+	created_at      date,
+	created_by      varchar(255),
+	updated_at      date,
+	updated_by      varchar(255),
+	is_deleted      bit,
+	deleted_at      date,
+	deleted_by      varchar(255),
+	constraint fk_fungsi_log_01 foreign key (id_reference) references fungsi (id),
+	primary key (id)
+) engine = innodb
+  charset = utf8mb4
+  collate = utf8mb4_unicode_ci;

@@ -2,9 +2,11 @@
 
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanKabupatenEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanProvinsiEntity;
+use RendyRobbani\Kodefikasi\Pemda\Entity\FungsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Peraturan\Peraturan;
 use RendyRobbani\Kodefikasi\Pemda\Service\UrusanKabupatenService;
 use RendyRobbani\Kodefikasi\Pemda\Service\UrusanProvinsiService;
+use RendyRobbani\Kodefikasi\Pemda\Service\FungsiService;
 use RendyRobbani\PHP\Application;
 use RendyRobbani\PHP\Connection\Connection;
 
@@ -15,10 +17,11 @@ require_once __DIR__ . "/../../vendor/autoload.php";
 Application::setConfig(__DIR__ . "/../../res/application.json");
 $connection = Application::getComponent(Connection::class);
 
-for ($i = 0; $i < 2; $i++) {
+for ($i = 2; $i < 3; $i++) {
 	$info = match ($i) {
 		0 => Application::getEntityInfo(UrusanProvinsiEntity::class),
 		1 => Application::getEntityInfo(UrusanKabupatenEntity::class),
+		2 => Application::getEntityInfo(FungsiEntity::class),
 	};
 
 	for ($j = 0; $j < 2; $j++) {
@@ -35,10 +38,12 @@ for ($i = 0; $i < 2; $i++) {
 		echo PHP_EOL;
 		$connection->exec($sql);
 
-		$sql = "alter table $connection->database.$tableName modify column keterangan varchar(3000)";
-		echo $sql . ";";
-		echo PHP_EOL;
-		$connection->exec($sql);
+		if (!str_contains($info->table, "fungsi")) {
+			$sql = "alter table $connection->database.$tableName modify column keterangan varchar(3000)";
+			echo $sql . ";";
+			echo PHP_EOL;
+			$connection->exec($sql);
+		}
 
 		if (str_contains($info->table, "urusan")) {
 			$sql = "alter table $connection->database.$tableName modify column kinerja varchar(3000)";
@@ -81,11 +86,18 @@ for ($i = 0; $i < 2; $i++) {
 			$service = Application::getComponent(UrusanKabupatenService::class);
 			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "C"))), true);
 			break;
+		case 2:
+			$service = Application::getComponent(FungsiService::class);
+			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "D"))), true);
+			break;
 	}
 
 	$sql = [];
 	$sql[] = "select max(length(nama))       as nama";
-	$sql[] = "     , max(length(keterangan)) as keterangan";
+
+	if (!str_contains($info->table, "fungsi")) {
+		$sql[] = "     , max(length(keterangan)) as keterangan";
+	}
 
 	if (str_contains($info->table, "urusan")) {
 		$sql[] = "     , max(length(kinerja))    as kinerja";
@@ -108,11 +120,13 @@ for ($i = 0; $i < 2; $i++) {
 			echo PHP_EOL;
 			$connection->exec($sql);
 
-			$len = max(255, $fetch_row["keterangan"]);
-			$sql = "alter table $connection->database.$tableName modify column keterangan varchar($len)";
-			echo $sql . ";";
-			echo PHP_EOL;
-			$connection->exec($sql);
+			if (!str_contains($info->table, "fungsi")) {
+				$len = max(255, $fetch_row["keterangan"]);
+				$sql = "alter table $connection->database.$tableName modify column keterangan varchar($len)";
+				echo $sql . ";";
+				echo PHP_EOL;
+				$connection->exec($sql);
+			}
 
 			if (str_contains($info->table, "urusan")) {
 				$len = max(255, $fetch_row["kinerja"]);
