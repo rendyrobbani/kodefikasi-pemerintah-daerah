@@ -8,7 +8,7 @@ use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\PdfParserException;
 use setasign\Fpdi\PdfReader\PdfReaderException;
 
-class PdfUtility
+final class PdfUtility
 {
 	private function __construct()
 	{

@@ -37,4 +37,17 @@ enum Peraturan
 			self::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861 => "2026-05-07",
 		};
 	}
+
+	public function tentang(): string
+	{
+		return match ($this) {
+			self::PERMENDAGRI_TAHUN_2019_NOMOR_90 => "Klasifikasi, Kodefikasi, dan Nomenklatur Perencanaan Pembangunan dan Keuangan Daerah",
+			self::KEPMENDAGRI_TAHUN_2020_NOMOR_050_3708 => "Hasil Verifikasi dan Validasi Pemutakhiran Klasifikasi, Kodefikasi dan Nomenklatur Perencanaan Pembangunan dan Keuangan Daerah",
+			self::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889 => "Hasil Verifikasi, Validasi, dan Inventarisasi Pemutakhiran Klasifikasi, Kodefikasi dan Nomenklatur Perencanaan Pembangunan dan Keuangan Daerah",
+			self::KEPMENDAGRI_TAHUN_2023_NOMOR_900_1_15_5_1317 => "Perubahan atas Keputusan Menteri Dalam Negeri Nomor 050-5889 Tahun 2021 tentang Hasil Verifikasi, Validasi dan Inventarisasi Pemutakhiran Klasifikasi, Kodefikasi dan Nomenklatur Perencanaan Pembangunan dan Keuangan Daerah",
+			self::KEPMENDAGRI_TAHUN_2024_NOMOR_900_1_15_5_3406 => "Perubahan Kedua atas Keputusan Menteri Dalam Negeri Nomor 050-5889 Tahun 2021 tentang Hasil Verifikasi, Validasi dan Inventarisasi Pemutakhiran Klasifikasi, Kodefikasi dan Nomenklatur Perencanaan Pembangunan dan Keuangan Daerah",
+			self::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850 => "Perubahan Ketiga atas Keputusan Menteri Dalam Negeri Nomor 050-5889 Tahun 2021 tentang Hasil Verifikasi, Validasi dan Inventarisasi Pemutakhiran Klasifikasi, Kodefikasi dan Nomenklatur Perencanaan Pembangunan dan Keuangan Daerah",
+			self::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861 => "Perubahan Keempat atas Keputusan Menteri Dalam Negeri Nomor 050-5889 Tahun 2021 tentang Hasil Verifikasi, Validasi dan Inventarisasi Pemutakhiran Klasifikasi, Kodefikasi dan Nomenklatur Perencanaan Pembangunan dan Keuangan Daerah",
+		};
+	}
 }

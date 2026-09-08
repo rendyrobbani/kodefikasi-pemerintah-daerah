@@ -9,7 +9,7 @@ use RendyRobbani\PHP\Persistence\ForeignKey;
 use RendyRobbani\PHP\Persistence\ForeignKeys;
 use RendyRobbani\PHP\Persistence\Id;
 
-#[Entity(table: "urusan_provinsi_history")]
+#[Entity(table: "urusan_provinsi_log")]
 #[ForeignKeys(values: [
 	new ForeignKey(
 		columns: [
@@ -21,7 +21,7 @@ use RendyRobbani\PHP\Persistence\Id;
 		],
 	)
 ])]
-class UrusanProvinsiHistoryEntity
+class UrusanProvinsiLogEntity
 {
 	#[Id(isGeneratedValue: true)]
 	#[Column]
@@ -84,31 +84,31 @@ class UrusanProvinsiHistoryEntity
 	#[Column]
 	protected string|null $deletedBy = null;
 
-	public function getKodeUrusan(): int|null
+	public function kodeUrusan(): string|null
 	{
 		if ($this->nomorUrusan === null) return null;
 		return str_replace("0", "X", $this->nomorUrusan);
 	}
 
-	public function getKodeBidang(): int|null
+	public function kodeBidang(): string|null
 	{
 		if ($this->nomorBidang === null) return null;
 		return str_replace("00", "XX", str_pad($this->nomorBidang, 2, "0", STR_PAD_LEFT));
 	}
 
-	public function getKodeProgram(): int|null
+	public function kodeProgram(): string|null
 	{
 		return $this->nomorProgram;
 	}
 
-	public function getKodeKegiatan(): int|null
+	public function kodeKegiatan(): string|null
 	{
 		if ($this->nomorKegiatan1 === null) return null;
 		if ($this->nomorKegiatan2 === null) return null;
 		return $this->nomorKegiatan1 . "." . str_pad($this->nomorKegiatan2, 2, "0", STR_PAD_LEFT);
 	}
 
-	public function getKodeSubkegiatan(Peraturan $peraturan): int|null
+	public function kodeSubkegiatan(Peraturan $peraturan): string|null
 	{
 		if ($this->nomorSubkegiatan === null) return null;
 		return str_pad($this->nomorSubkegiatan, match ($peraturan) {
@@ -119,16 +119,16 @@ class UrusanProvinsiHistoryEntity
 		}, "0", STR_PAD_LEFT);
 	}
 
-	public function getKode(Peraturan $peraturan): int|null
+	public function kode(Peraturan $peraturan): string|null
 	{
 		$kode = [];
 		for ($level = 1; $level <= 5; $level++) {
 			$value = match ($level) {
-				1 => $this->getKodeUrusan(),
-				2 => $this->getKodeBidang(),
-				3 => $this->getKodeProgram(),
-				4 => $this->getKodeKegiatan(),
-				5 => $this->getKodeSubkegiatan($peraturan),
+				1 => $this->kodeUrusan(),
+				2 => $this->kodeBidang(),
+				3 => $this->kodeProgram(),
+				4 => $this->kodeKegiatan(),
+				5 => $this->kodeSubkegiatan($peraturan),
 			};
 			if ($value === null) break;
 			$kode[] = $value;
@@ -136,112 +136,114 @@ class UrusanProvinsiHistoryEntity
 		return implode(".", $kode);
 	}
 
-	public function getId(): string|null
+	public function id(): int|null
 	{
-		$id = [];
-		for ($level = 1; $level <= 6; $level++) {
-			$value = match ($level) {
-				1 => $this->nomorUrusan,
-				2 => $this->nomorBidang,
-				3 => $this->nomorProgram,
-				4 => $this->nomorKegiatan1,
-				5 => $this->nomorKegiatan2,
-				6 => $this->nomorSubkegiatan,
-			};
-			if ($value === null) break;
-			$id[] = $value;
-		}
-		return $this->id = implode("-", $id);
+		return $this->id;
 	}
 
-	public function getNomorUrusan(): int|null
+	public function idReference(): string|null
+	{
+		return $this->idReference;
+	}
+
+	public function nomorUrusan(): int|null
 	{
 		return $this->nomorUrusan;
 	}
 
-	public function getNomorBidang(): int|null
+	public function nomorBidang(): int|null
 	{
 		return $this->nomorBidang;
 	}
 
-	public function getNomorProgram(): int|null
+	public function nomorProgram(): int|null
 	{
 		return $this->nomorProgram;
 	}
 
-	public function getNomorKegiatan1(): int|null
+	public function nomorKegiatan1(): int|null
 	{
 		return $this->nomorKegiatan1;
 	}
 
-	public function getNomorKegiatan2(): int|null
+	public function nomorKegiatan2(): int|null
 	{
 		return $this->nomorKegiatan2;
 	}
 
-	public function getNomorSubkegiatan(): int|null
+	public function nomorSubkegiatan(): int|null
 	{
 		return $this->nomorSubkegiatan;
 	}
 
-	public function getNama(): string|null
+	public function nama(): string|null
 	{
 		return $this->nama;
 	}
 
-	public function getKeterangan(): string|null
+	public function keterangan(): string|null
 	{
 		return $this->keterangan;
 	}
 
-	public function getKinerja(): string|null
+	public function kinerja(): string|null
 	{
 		return $this->kinerja;
 	}
 
-	public function getIndikator(): string|null
+	public function indikator(): string|null
 	{
 		return $this->indikator;
 	}
 
-	public function getSatuan(): string|null
+	public function satuan(): string|null
 	{
 		return $this->satuan;
 	}
 
-	public function getCreatedAt(): string|null
+	public function createdAt(): string|null
 	{
 		return $this->createdAt;
 	}
 
-	public function getCreatedBy(): string|null
+	public function createdBy(): string|null
 	{
 		return $this->createdBy;
 	}
 
-	public function getUpdatedAt(): string|null
+	public function updatedAt(): string|null
 	{
 		return $this->updatedAt;
 	}
 
-	public function getUpdatedBy(): string|null
+	public function updatedBy(): string|null
 	{
 		return $this->updatedBy;
 	}
 
-	public function getIsDeleted(): bool|null
+	public function isDeleted(): bool|null
 	{
 		return $this->isDeleted === true;
 	}
 
-	public function getDeletedAt(): string|null
+	public function deletedAt(): string|null
 	{
 		return $this->deletedAt;
 	}
 
-	public function getDeletedBy(): string|null
+	public function deletedBy(): string|null
 	{
 		return $this->deletedBy;
+	}
+
+	public function setId(int|null $id): void
+	{
+		$this->id = $id;
+	}
+
+	public function setIdReference(string|null $idReference): void
+	{
+		$this->idReference = $idReference;
 	}
 
 	public function setNomorUrusan(int|null $nomorUrusan): void
