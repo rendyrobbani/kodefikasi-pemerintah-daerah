@@ -3,6 +3,7 @@
 namespace RendyRobbani\Kodefikasi\Pemda\Service;
 
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use RendyRobbani\Kodefikasi\Pemda\Comparator\StringComparator;
 use RendyRobbani\Kodefikasi\Pemda\Entity\LraEntity;
 use RendyRobbani\Kodefikasi\Pemda\Exception\RekeningExistsException;
@@ -107,43 +108,10 @@ class LraServiceImpl implements LraService
 							$intoEntity->setIsUpdated(true);
 							$intoEntity->setIsDeleted(false);
 
-							if ($peraturan === Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90) {
-								if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-01226-01525.xlsx") {
-									switch ($row->getRowIndex()) {
-										case 1383:
-											$intoEntity->setNomorRekening4(4);
-											break;
-										case 6893:
-											$intoEntity->setNomorRekening5(3);
-											break;
-										case 6896:
-											$intoEntity->setNomorRekening5(3);
-											$intoEntity->setNomorRekening6(2);
-											break;
-										case 7003:
-											$intoEntity->setNomorRekening6(2);
-											break;
-									}
-								}
-								if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-01526-01763.xlsx") {
-									switch ($row->getRowIndex()) {
-										case 2723:
-										case 2732:
-											$intoEntity->setNomorRekening1(5);
-											$intoEntity->setNomorRekening2(2);
-											break;
-										case 3696:
-										case 3764:
-											$intoEntity->setNomorRekening6(2);
-											break;
-										case 3929:
-											$intoEntity->setNomorRekening4(1);
-											break;
-										case 4312:
-											$intoEntity->setNomorRekening4(7);
-											break;
-									}
-								}
+							switch ($peraturan) {
+								case Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90:
+									$this->handlePermendagriTahun2019Nomor90($row, $excel_file, $intoEntity);
+									break;
 							}
 						}
 
@@ -285,6 +253,47 @@ class LraServiceImpl implements LraService
 			}
 
 			throw $exception;
+		}
+	}
+
+	private function handlePermendagriTahun2019Nomor90(Row $row, string $excel_file, LraEntity $entity): void
+	{
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-01226-01525.xlsx") {
+			switch ($row->getRowIndex()) {
+				case 1383:
+					$entity->setNomorRekening4(4);
+					break;
+				case 6893:
+					$entity->setNomorRekening5(3);
+					break;
+				case 6896:
+					$entity->setNomorRekening5(3);
+					$entity->setNomorRekening6(2);
+					break;
+				case 7003:
+					$entity->setNomorRekening6(2);
+					break;
+			}
+		}
+
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-01526-01763.xlsx") {
+			switch ($row->getRowIndex()) {
+				case 2723:
+				case 2732:
+					$entity->setNomorRekening1(5);
+					$entity->setNomorRekening2(2);
+					break;
+				case 3696:
+				case 3764:
+					$entity->setNomorRekening6(2);
+					break;
+				case 3929:
+					$entity->setNomorRekening4(1);
+					break;
+				case 4312:
+					$entity->setNomorRekening4(7);
+					break;
+			}
 		}
 	}
 }

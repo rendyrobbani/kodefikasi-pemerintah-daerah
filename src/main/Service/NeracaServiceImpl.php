@@ -3,6 +3,7 @@
 namespace RendyRobbani\Kodefikasi\Pemda\Service;
 
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use RendyRobbani\Kodefikasi\Pemda\Comparator\StringComparator;
 use RendyRobbani\Kodefikasi\Pemda\Entity\NeracaEntity;
 use RendyRobbani\Kodefikasi\Pemda\Exception\RekeningExistsException;
@@ -107,111 +108,10 @@ class NeracaServiceImpl implements NeracaService
 							$intoEntity->setIsUpdated(true);
 							$intoEntity->setIsDeleted(false);
 
-							if ($peraturan === Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90) {
-								if (pathinfo($excel_file, PATHINFO_BASENAME) === "H-00393-00692.xlsx") {
-									switch ($row->getRowIndex()) {
-										case 672:
-										case 674:
-											$intoEntity->setNomorRekening4(12);
-											$intoEntity->setNomorRekening5(1);
-											break;
-										case 782:
-											$intoEntity->setNomorRekening5(19);
-											break;
-										case 2278:
-											$intoEntity->setNomorRekening4(1);
-											break;
-										case 2582:
-										case 2654:
-										case 3176:
-											$intoEntity->setNomorRekening6(2);
-											break;
-										case 3132:
-										case 3155:
-										case 3158:
-											$intoEntity->setNomorRekening5(2);
-											break;
-										case 3137:
-											$intoEntity->setNomorRekening5(3);
-											break;
-									}
-								}
-								if (pathinfo($excel_file, PATHINFO_BASENAME) === "H-00693-00992.xlsx") {
-									if ($row->getRowIndex() >= 1409 && $row->getRowIndex() < 1548) {
-										$intoEntity->setNomorRekening1(1);
-										$intoEntity->setNomorRekening2(3);
-										$intoEntity->setNomorRekening3(7);
-										$intoEntity->setNomorRekening4(3);
-										$intoEntity->setNomorRekening5(3);
-									}
-									if ($row->getRowIndex() >= 3185 && $row->getRowIndex() < 3803) {
-										$intoEntity->setNomorRekening1(2);
-										$intoEntity->setNomorRekening2(1);
-										$intoEntity->setNomorRekening3(6);
-										$intoEntity->setNomorRekening4(2);
-										$intoEntity->setNomorRekening5(2);
-									}
-									if ($row->getRowIndex() >= 3803) {
-										$intoEntity->setNomorRekening1(2);
-										$intoEntity->setNomorRekening2(1);
-										$intoEntity->setNomorRekening3(6);
-										$intoEntity->setNomorRekening4(2);
-										$intoEntity->setNomorRekening5(3);
-									}
-
-									switch ($row->getRowIndex()) {
-										case 1124:
-										case 1127:
-										case 1130:
-											$intoEntity->setNomorRekening5(2);
-											break;
-										case 1429:
-											$intoEntity->setNomorRekening2(3);
-											break;
-										case 1696:
-										case 1699:
-											$intoEntity->setNomorRekening4(1);
-											break;
-										case 1730:
-											$intoEntity->setNomorRekening6(3);
-											break;
-										case 1764:
-										case 1768:
-										case 1769:
-										case 1771:
-											$intoEntity->setNomorRekening3(6);
-											break;
-									}
-								}
-								if (pathinfo($excel_file, PATHINFO_BASENAME) === "H-00993-01226.xlsx") {
-									switch ($row->getRowIndex()) {
-										case 465:
-										case 1962:
-										case 1965:
-										case 1968:
-										case 1971:
-											$intoEntity->setNomorRekening3(6);
-											break;
-										case 4028:
-										case 4061:
-										case 4078:
-										case 4094:
-										case 4102:
-											$intoEntity->setNomorRekening2(1);
-											break;
-										case 4179:
-										case 4384:
-											$intoEntity->setNomorRekening6(2);
-											break;
-										case 4183:
-											$intoEntity->setNomorRekening3(7);
-											break;
-										case 4480:
-										case 4483:
-											$intoEntity->setNomorRekening5(2);
-											break;
-									}
-								}
+							switch ($peraturan) {
+								case Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90:
+									$this->handlePermendagriTahun2019Nomor90($row, $excel_file, $intoEntity);
+									break;
 							}
 						}
 
@@ -357,6 +257,116 @@ class NeracaServiceImpl implements NeracaService
 			}
 
 			throw $exception;
+		}
+	}
+
+	private function handlePermendagriTahun2019Nomor90(Row $row, string $excel_file, NeracaEntity $entity): void
+	{
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "H-00393-00692.xlsx") {
+			switch ($row->getRowIndex()) {
+				case 672:
+				case 674:
+					$entity->setNomorRekening4(12);
+					$entity->setNomorRekening5(1);
+					break;
+				case 782:
+					$entity->setNomorRekening5(19);
+					break;
+				case 2278:
+					$entity->setNomorRekening4(1);
+					break;
+				case 2582:
+				case 2654:
+				case 3176:
+					$entity->setNomorRekening6(2);
+					break;
+				case 3132:
+				case 3155:
+				case 3158:
+					$entity->setNomorRekening5(2);
+					break;
+				case 3137:
+					$entity->setNomorRekening5(3);
+					break;
+			}
+		}
+
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "H-00693-00992.xlsx") {
+			if ($row->getRowIndex() >= 1409 && $row->getRowIndex() < 1548) {
+				$entity->setNomorRekening1(1);
+				$entity->setNomorRekening2(3);
+				$entity->setNomorRekening3(7);
+				$entity->setNomorRekening4(3);
+				$entity->setNomorRekening5(3);
+			}
+			if ($row->getRowIndex() >= 3185 && $row->getRowIndex() < 3803) {
+				$entity->setNomorRekening1(2);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(2);
+				$entity->setNomorRekening5(2);
+			}
+			if ($row->getRowIndex() >= 3803) {
+				$entity->setNomorRekening1(2);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(2);
+				$entity->setNomorRekening5(3);
+			}
+
+			switch ($row->getRowIndex()) {
+				case 1124:
+				case 1127:
+				case 1130:
+					$entity->setNomorRekening5(2);
+					break;
+				case 1429:
+					$entity->setNomorRekening2(3);
+					break;
+				case 1696:
+				case 1699:
+					$entity->setNomorRekening4(1);
+					break;
+				case 1730:
+					$entity->setNomorRekening6(3);
+					break;
+				case 1764:
+				case 1768:
+				case 1769:
+				case 1771:
+					$entity->setNomorRekening3(6);
+					break;
+			}
+		}
+
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "H-00993-01226.xlsx") {
+			switch ($row->getRowIndex()) {
+				case 465:
+				case 1962:
+				case 1965:
+				case 1968:
+				case 1971:
+					$entity->setNomorRekening3(6);
+					break;
+				case 4028:
+				case 4061:
+				case 4078:
+				case 4094:
+				case 4102:
+					$entity->setNomorRekening2(1);
+					break;
+				case 4179:
+				case 4384:
+					$entity->setNomorRekening6(2);
+					break;
+				case 4183:
+					$entity->setNomorRekening3(7);
+					break;
+				case 4480:
+				case 4483:
+					$entity->setNomorRekening5(2);
+					break;
+			}
 		}
 	}
 }

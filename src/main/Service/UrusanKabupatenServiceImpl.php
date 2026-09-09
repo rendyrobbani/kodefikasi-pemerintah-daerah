@@ -3,6 +3,7 @@
 namespace RendyRobbani\Kodefikasi\Pemda\Service;
 
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use RendyRobbani\Kodefikasi\Pemda\Comparator\StringComparator;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanKabupatenEntity;
 use RendyRobbani\Kodefikasi\Pemda\Exception\BidangExistsException;
@@ -121,18 +122,10 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 							$intoEntity->setIsUpdated(true);
 							$intoEntity->setIsDeleted(false);
 
-							if ($peraturan === Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90) {
-								if (pathinfo($excel_file, PATHINFO_BASENAME) === "C-00189-00310.xlsx") {
-									switch ($row->getRowIndex()) {
-										case 1627:
-										case 2093:
-											$intoEntity->setNomorProgram(3);
-											break;
-										case 1898:
-											$intoEntity->setNomorUrusan(2);
-											break;
-									}
-								}
+							switch ($peraturan) {
+								case Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90:
+									$this->handlePermendagriTahun2019Nomor90($row, $excel_file, $intoEntity);
+									break;
 							}
 						}
 
@@ -283,6 +276,21 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 			}
 
 			throw $exception;
+		}
+	}
+
+	private function handlePermendagriTahun2019Nomor90(Row $row, string $excel_file, UrusanKabupatenEntity $entity): void
+	{
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "C-00189-00310.xlsx") {
+			switch ($row->getRowIndex()) {
+				case 1627:
+				case 2093:
+					$entity->setNomorProgram(3);
+					break;
+				case 1898:
+					$entity->setNomorUrusan(2);
+					break;
+			}
 		}
 	}
 }
