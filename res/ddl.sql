@@ -275,3 +275,59 @@ create or replace table neraca_log (
 ) engine = innodb
   charset = utf8mb4
   collate = utf8mb4_unicode_ci;
+
+drop table if exists lra_log;
+drop table if exists lra;
+
+create or replace table lra (
+	id              varchar(255),
+	nomor_rekening1 tinyint,
+	nomor_rekening2 tinyint,
+	nomor_rekening3 tinyint,
+	nomor_rekening4 tinyint,
+	nomor_rekening5 smallint,
+	nomor_rekening6 mediumint,
+	nama            varchar(255),
+	keterangan      varchar(255),
+	created_at      date,
+	created_by      varchar(255),
+	updated_at      date,
+	updated_by      varchar(255),
+	is_deleted      bit,
+	deleted_at      date,
+	deleted_by      varchar(255),
+	constraint ck_lra_01 check (id = concat_ws('-', nomor_rekening1, nomor_rekening2, nomor_rekening3, nomor_rekening4, nomor_rekening5, nomor_rekening6)),
+	constraint ck_lra_02 check (nomor_rekening1 is null or nomor_rekening1 between 4 and 6),
+	constraint ck_lra_03 check (nomor_rekening2 is null or nomor_rekening2 > 0),
+	constraint ck_lra_04 check (nomor_rekening3 is null or nomor_rekening3 > 0),
+	constraint ck_lra_05 check (nomor_rekening4 is null or nomor_rekening4 > 0),
+	constraint ck_lra_06 check (nomor_rekening5 is null or nomor_rekening5 > 0),
+	constraint ck_lra_07 check (nomor_rekening6 is null or nomor_rekening6 > 0),
+	primary key (id)
+) engine = innodb
+  charset = utf8mb4
+  collate = utf8mb4_unicode_ci;
+
+create or replace table lra_log (
+	id              int auto_increment,
+	id_reference    varchar(255),
+	nomor_rekening1 tinyint,
+	nomor_rekening2 tinyint,
+	nomor_rekening3 tinyint,
+	nomor_rekening4 tinyint,
+	nomor_rekening5 smallint,
+	nomor_rekening6 mediumint,
+	nama            varchar(255),
+	keterangan      varchar(255),
+	created_at      date,
+	created_by      varchar(255),
+	updated_at      date,
+	updated_by      varchar(255),
+	is_deleted      bit,
+	deleted_at      date,
+	deleted_by      varchar(255),
+	constraint fk_lra_log_01 foreign key (id_reference) references lra (id),
+	primary key (id)
+) engine = innodb
+  charset = utf8mb4
+  collate = utf8mb4_unicode_ci;

@@ -4,21 +4,21 @@ namespace RendyRobbani\Kodefikasi\Pemda\Service;
 
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use RendyRobbani\Kodefikasi\Pemda\Comparator\StringComparator;
-use RendyRobbani\Kodefikasi\Pemda\Entity\NeracaEntity;
+use RendyRobbani\Kodefikasi\Pemda\Entity\LraEntity;
 use RendyRobbani\Kodefikasi\Pemda\Exception\RekeningExistsException;
 use RendyRobbani\Kodefikasi\Pemda\Exception\RekeningNotFoundException;
 use RendyRobbani\Kodefikasi\Pemda\Peraturan\Peraturan;
-use RendyRobbani\Kodefikasi\Pemda\Repository\NeracaLogRepository;
-use RendyRobbani\Kodefikasi\Pemda\Repository\NeracaRepository;
+use RendyRobbani\Kodefikasi\Pemda\Repository\LraLogRepository;
+use RendyRobbani\Kodefikasi\Pemda\Repository\LraRepository;
 use RendyRobbani\Kodefikasi\Pemda\Utility\SpreadsheetUtility;
 use RendyRobbani\PHP\Connection\Connection;
 use RendyRobbani\PHP\Exception\FileNotFoundException;
 
-class NeracaServiceImpl implements NeracaService
+class LraServiceImpl implements LraService
 {
-	public function __construct(protected Connection          $connection,
-	                            protected NeracaRepository    $repository,
-	                            protected NeracaLogRepository $logRepository)
+	public function __construct(protected Connection       $connection,
+	                            protected LraRepository    $repository,
+	                            protected LraLogRepository $logRepository)
 	{
 	}
 
@@ -34,7 +34,7 @@ class NeracaServiceImpl implements NeracaService
 			$fromEntities = $this->repository->findAll();
 			$fromEntities = array_combine(array_map(fn($fromEntity) => $fromEntity->id(), $fromEntities), $fromEntities);
 
-			/** @var array<string, NeracaEntity> $intoEntities */
+			/** @var array<string, LraEntity> $intoEntities */
 			$intoEntities = [];
 
 			$updateIds = [];
@@ -72,7 +72,7 @@ class NeracaServiceImpl implements NeracaService
 								unset($intoEntities[$intoEntity->id()]);
 							}
 						} else {
-							$intoEntity = new NeracaEntity();
+							$intoEntity = new LraEntity();
 
 							for ($colNum = 1; $colNum <= sizeof($values); $colNum++) {
 								$value = $values[$colNum - 1];
@@ -108,107 +108,39 @@ class NeracaServiceImpl implements NeracaService
 							$intoEntity->setIsDeleted(false);
 
 							if ($peraturan === Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90) {
-								if (pathinfo($excel_file, PATHINFO_BASENAME) === "H-00393-00692.xlsx") {
+								if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-01226-01525.xlsx") {
 									switch ($row->getRowIndex()) {
-										case 672:
-										case 674:
-											$intoEntity->setNomorRekening4(12);
-											$intoEntity->setNomorRekening5(1);
+										case 1383:
+											$intoEntity->setNomorRekening4(4);
 											break;
-										case 782:
-											$intoEntity->setNomorRekening5(19);
-											break;
-										case 2278:
-											$intoEntity->setNomorRekening4(1);
-											break;
-										case 2582:
-										case 2654:
-										case 3176:
-											$intoEntity->setNomorRekening6(2);
-											break;
-										case 3132:
-										case 3155:
-										case 3158:
-											$intoEntity->setNomorRekening5(2);
-											break;
-										case 3137:
+										case 6893:
 											$intoEntity->setNomorRekening5(3);
 											break;
-									}
-								}
-								if (pathinfo($excel_file, PATHINFO_BASENAME) === "H-00693-00992.xlsx") {
-									if ($row->getRowIndex() >= 1409 && $row->getRowIndex() < 1548) {
-										$intoEntity->setNomorRekening1(1);
-										$intoEntity->setNomorRekening2(3);
-										$intoEntity->setNomorRekening3(7);
-										$intoEntity->setNomorRekening4(3);
-										$intoEntity->setNomorRekening5(3);
-									}
-									if ($row->getRowIndex() >= 3185 && $row->getRowIndex() < 3803) {
-										$intoEntity->setNomorRekening1(2);
-										$intoEntity->setNomorRekening2(1);
-										$intoEntity->setNomorRekening3(6);
-										$intoEntity->setNomorRekening4(2);
-										$intoEntity->setNomorRekening5(2);
-									}
-									if ($row->getRowIndex() >= 3803) {
-										$intoEntity->setNomorRekening1(2);
-										$intoEntity->setNomorRekening2(1);
-										$intoEntity->setNomorRekening3(6);
-										$intoEntity->setNomorRekening4(2);
-										$intoEntity->setNomorRekening5(3);
-									}
-
-									switch ($row->getRowIndex()) {
-										case 1124:
-										case 1127:
-										case 1130:
-											$intoEntity->setNomorRekening5(2);
-											break;
-										case 1429:
-											$intoEntity->setNomorRekening2(3);
-											break;
-										case 1696:
-										case 1699:
-											$intoEntity->setNomorRekening4(1);
-											break;
-										case 1730:
-											$intoEntity->setNomorRekening6(3);
-											break;
-										case 1764:
-										case 1768:
-										case 1769:
-										case 1771:
-											$intoEntity->setNomorRekening3(6);
-											break;
-									}
-								}
-								if (pathinfo($excel_file, PATHINFO_BASENAME) === "H-00993-01226.xlsx") {
-									switch ($row->getRowIndex()) {
-										case 465:
-										case 1962:
-										case 1965:
-										case 1968:
-										case 1971:
-											$intoEntity->setNomorRekening3(6);
-											break;
-										case 4028:
-										case 4061:
-										case 4078:
-										case 4094:
-										case 4102:
-											$intoEntity->setNomorRekening2(1);
-											break;
-										case 4179:
-										case 4384:
+										case 6896:
+											$intoEntity->setNomorRekening5(3);
 											$intoEntity->setNomorRekening6(2);
 											break;
-										case 4183:
-											$intoEntity->setNomorRekening3(7);
+										case 7003:
+											$intoEntity->setNomorRekening6(2);
 											break;
-										case 4480:
-										case 4483:
-											$intoEntity->setNomorRekening5(2);
+									}
+								}
+								if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-01526-01763.xlsx") {
+									switch ($row->getRowIndex()) {
+										case 2723:
+										case 2732:
+											$intoEntity->setNomorRekening1(5);
+											$intoEntity->setNomorRekening2(2);
+											break;
+										case 3696:
+										case 3764:
+											$intoEntity->setNomorRekening6(2);
+											break;
+										case 3929:
+											$intoEntity->setNomorRekening4(1);
+											break;
+										case 4312:
+											$intoEntity->setNomorRekening4(7);
 											break;
 									}
 								}
@@ -254,34 +186,34 @@ class NeracaServiceImpl implements NeracaService
 								if ($level < $levelEntity && !isset($intoEntities[$ID])) {
 									switch ($level) {
 										case 1:
-											throw new RekeningNotFoundException(RekeningNotFoundException::NERACA, RekeningNotFoundException::LEVEL_1, $kode);
+											throw new RekeningNotFoundException(RekeningNotFoundException::LRA, RekeningNotFoundException::LEVEL_1, $kode);
 										case 2:
-											throw new RekeningNotFoundException(RekeningNotFoundException::NERACA, RekeningNotFoundException::LEVEL_2, $kode);
+											throw new RekeningNotFoundException(RekeningNotFoundException::LRA, RekeningNotFoundException::LEVEL_2, $kode);
 										case 3:
-											throw new RekeningNotFoundException(RekeningNotFoundException::NERACA, RekeningNotFoundException::LEVEL_3, $kode);
+											throw new RekeningNotFoundException(RekeningNotFoundException::LRA, RekeningNotFoundException::LEVEL_3, $kode);
 										case 4:
-											throw new RekeningNotFoundException(RekeningNotFoundException::NERACA, RekeningNotFoundException::LEVEL_4, $kode);
+											throw new RekeningNotFoundException(RekeningNotFoundException::LRA, RekeningNotFoundException::LEVEL_4, $kode);
 										case 5:
-											throw new RekeningNotFoundException(RekeningNotFoundException::NERACA, RekeningNotFoundException::LEVEL_5, $kode);
+											throw new RekeningNotFoundException(RekeningNotFoundException::LRA, RekeningNotFoundException::LEVEL_5, $kode);
 										case 6:
-											throw new RekeningNotFoundException(RekeningNotFoundException::NERACA, RekeningNotFoundException::LEVEL_6, $kode);
+											throw new RekeningNotFoundException(RekeningNotFoundException::LRA, RekeningNotFoundException::LEVEL_6, $kode);
 									}
 								}
 
 								if ($level === $levelEntity && isset($intoEntities[$ID])) {
 									switch ($level) {
 										case 1:
-											throw new RekeningExistsException(RekeningExistsException::NERACA, RekeningExistsException::LEVEL_1, $kode);
+											throw new RekeningExistsException(RekeningExistsException::LRA, RekeningExistsException::LEVEL_1, $kode);
 										case 2:
-											throw new RekeningExistsException(RekeningExistsException::NERACA, RekeningExistsException::LEVEL_2, $kode);
+											throw new RekeningExistsException(RekeningExistsException::LRA, RekeningExistsException::LEVEL_2, $kode);
 										case 3:
-											throw new RekeningExistsException(RekeningExistsException::NERACA, RekeningExistsException::LEVEL_3, $kode);
+											throw new RekeningExistsException(RekeningExistsException::LRA, RekeningExistsException::LEVEL_3, $kode);
 										case 4:
-											throw new RekeningExistsException(RekeningExistsException::NERACA, RekeningExistsException::LEVEL_4, $kode);
+											throw new RekeningExistsException(RekeningExistsException::LRA, RekeningExistsException::LEVEL_4, $kode);
 										case 5:
-											throw new RekeningExistsException(RekeningExistsException::NERACA, RekeningExistsException::LEVEL_5, $kode);
+											throw new RekeningExistsException(RekeningExistsException::LRA, RekeningExistsException::LEVEL_5, $kode);
 										case 6:
-											throw new RekeningExistsException(RekeningExistsException::NERACA, RekeningExistsException::LEVEL_6, $kode);
+											throw new RekeningExistsException(RekeningExistsException::LRA, RekeningExistsException::LEVEL_6, $kode);
 									}
 								}
 							}
@@ -303,11 +235,7 @@ class NeracaServiceImpl implements NeracaService
 							unset($fromEntities[$intoEntity->id()]);
 						}
 
-						if ($peraturan === Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90 && in_array($intoEntity->id(), ["2-1-6-2-3-377", "2-1-6-2-3-724"])) {
-							$lastId = $intoEntity->id() . "|" . $intoEntity->nama();
-						} else {
-							$lastId = $intoEntity->id();
-						}
+						$lastId = $intoEntity->id();
 						if ($intoEntity->isUpdated() && !in_array($lastId, $updateIds)) $updateIds[] = $lastId;
 						$intoEntities[$lastId] = $intoEntity;
 

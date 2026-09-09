@@ -3,6 +3,7 @@
 namespace RendyRobbani\Kodefikasi\Pemda\Service;
 
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use RendyRobbani\Kodefikasi\Pemda\Comparator\StringComparator;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanProvinsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Exception\BidangExistsException;
 use RendyRobbani\Kodefikasi\Pemda\Exception\BidangNotFoundException;
@@ -198,7 +199,8 @@ class UrusanProvinsiServiceImpl implements UrusanProvinsiService
 								$intoEntity->setUpdatedAt($peraturan->penetapan());
 								$intoEntity->setUpdatedBy($peraturan->referensi());
 
-								if ($intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
+								if (StringComparator::isEqual($fromEntity->nama(), $intoEntity->nama()) &&
+									$intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
 									$intoEntity->setKeterangan($fromEntity->keterangan());
 								}
 							}
