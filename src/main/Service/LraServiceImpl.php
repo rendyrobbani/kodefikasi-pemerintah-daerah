@@ -60,7 +60,7 @@ class LraServiceImpl implements LraService
 							if ($lastId !== null) {
 								$intoEntity = $intoEntities[$lastId];
 								if (preg_match("/^(digu)(.+)?$/", strtolower($value))) {
-									$intoEntity->setKeterangan($value);
+									$intoEntity->setKeterangan(ucfirst($value));
 								} elseif ($intoEntity->keterangan() !== null) {
 									$keterangan = $intoEntity->keterangan();
 									while (str_ends_with($keterangan, ".")) $keterangan = substr($keterangan, 0, strrpos($keterangan, "."));
