@@ -1,5 +1,6 @@
 <?php
 
+use RendyRobbani\Kodefikasi\Pemda\Entity\LoEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\LraEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\NeracaEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\SumberEntity;
@@ -7,6 +8,7 @@ use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanKabupatenEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanProvinsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\FungsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Peraturan\Peraturan;
+use RendyRobbani\Kodefikasi\Pemda\Service\LoService;
 use RendyRobbani\Kodefikasi\Pemda\Service\LraService;
 use RendyRobbani\Kodefikasi\Pemda\Service\NeracaService;
 use RendyRobbani\Kodefikasi\Pemda\Service\SumberService;
@@ -23,7 +25,7 @@ require_once __DIR__ . "/../../vendor/autoload.php";
 Application::setConfig(__DIR__ . "/../../res/application.json");
 $connection = Application::getComponent(Connection::class);
 
-for ($i = 5; $i < 6; $i++) {
+for ($i = 6; $i < 7; $i++) {
 	$info = match ($i) {
 		0 => Application::getEntityInfo(UrusanProvinsiEntity::class),
 		1 => Application::getEntityInfo(UrusanKabupatenEntity::class),
@@ -31,6 +33,7 @@ for ($i = 5; $i < 6; $i++) {
 		3 => Application::getEntityInfo(SumberEntity::class),
 		4 => Application::getEntityInfo(NeracaEntity::class),
 		5 => Application::getEntityInfo(LraEntity::class),
+		6 => Application::getEntityInfo(LoEntity::class),
 	};
 
 	for ($j = 0; $j < 2; $j++) {
@@ -110,6 +113,10 @@ for ($i = 5; $i < 6; $i++) {
 		case 5:
 			$service = Application::getComponent(LraService::class);
 			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "I"))), true);
+			break;
+		case 6:
+			$service = Application::getComponent(LoService::class);
+			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "J"))), true);
 			break;
 	}
 

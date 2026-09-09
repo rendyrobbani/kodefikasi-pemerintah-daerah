@@ -45,6 +45,9 @@ final class SpreadsheetUtility
 			$value = mb_convert_encoding($value, "UTF-8", "Windows-1252");
 		}
 
+		$value = str_ireplace("â€¦", "...", $value);
+		if ($value === "Dst...") $value = "Dst ...";
+
 		return $value == "" ? null : $value;
 	}
 
