@@ -1,5 +1,6 @@
 /.*/
 /cli/*/*/
+/cli/*/*.zip
 /vendor/
 
 .DS_Store

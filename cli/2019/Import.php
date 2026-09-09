@@ -25,7 +25,7 @@ require_once __DIR__ . "/../../vendor/autoload.php";
 Application::setConfig(__DIR__ . "/../../res/application.json");
 $connection = Application::getComponent(Connection::class);
 
-for ($i = 6; $i < 7; $i++) {
+for ($i = 0; $i < 7; $i++) {
 	$info = match ($i) {
 		0 => Application::getEntityInfo(UrusanProvinsiEntity::class),
 		1 => Application::getEntityInfo(UrusanKabupatenEntity::class),
