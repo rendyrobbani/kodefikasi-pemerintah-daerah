@@ -1,10 +1,12 @@
 <?php
 
+use RendyRobbani\Kodefikasi\Pemda\Entity\NeracaEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\SumberEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanKabupatenEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanProvinsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\FungsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Peraturan\Peraturan;
+use RendyRobbani\Kodefikasi\Pemda\Service\NeracaService;
 use RendyRobbani\Kodefikasi\Pemda\Service\SumberService;
 use RendyRobbani\Kodefikasi\Pemda\Service\UrusanKabupatenService;
 use RendyRobbani\Kodefikasi\Pemda\Service\UrusanProvinsiService;
@@ -19,12 +21,13 @@ require_once __DIR__ . "/../../vendor/autoload.php";
 Application::setConfig(__DIR__ . "/../../res/application.json");
 $connection = Application::getComponent(Connection::class);
 
-for ($i = 3; $i < 4; $i++) {
+for ($i = 4; $i < 5; $i++) {
 	$info = match ($i) {
 		0 => Application::getEntityInfo(UrusanProvinsiEntity::class),
 		1 => Application::getEntityInfo(UrusanKabupatenEntity::class),
 		2 => Application::getEntityInfo(FungsiEntity::class),
 		3 => Application::getEntityInfo(SumberEntity::class),
+		4 => Application::getEntityInfo(NeracaEntity::class),
 	};
 
 	for ($j = 0; $j < 2; $j++) {
@@ -96,6 +99,10 @@ for ($i = 3; $i < 4; $i++) {
 		case 3:
 			$service = Application::getComponent(SumberService::class);
 			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "G"))), true);
+			break;
+		case 4:
+			$service = Application::getComponent(NeracaService::class);
+			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "H"))), true);
 			break;
 	}
 
