@@ -75,6 +75,7 @@ class FungsiServiceImpl implements FungsiService
 
 						$intoEntity->setCreatedAt($peraturan->penetapan());
 						$intoEntity->setCreatedBy($peraturan->referensi());
+						$intoEntity->setIsUpdated(true);
 						$intoEntity->setIsDeleted(false);
 
 						if ($is_perubahan) {
@@ -116,21 +117,19 @@ class FungsiServiceImpl implements FungsiService
 						}
 
 						if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
-							if (!$intoEntity->isEqual($fromEntity)) {
+							$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
+							if ($intoEntity->isUpdated()) {
 								$intoEntity->setCreatedAt($fromEntity->createdAt());
 								$intoEntity->setCreatedBy($fromEntity->createdBy());
 								$intoEntity->setUpdatedAt($peraturan->penetapan());
 								$intoEntity->setUpdatedBy($peraturan->referensi());
-
-								$updateIds[] = $intoEntity->id();
 							}
-
 							unset($fromEntities[$intoEntity->id()]);
-						} else {
-							$updateIds[] = $intoEntity->id();
 						}
 
-						$intoEntities[$intoEntity->id()] = $intoEntity;
+						$lastId = $intoEntity->id();
+						if ($intoEntity->isUpdated() && !in_array($lastId, $updateIds)) $updateIds[] = $lastId;
+						$intoEntities[$lastId] = $intoEntity;
 
 						unset($intoEntity);
 					}

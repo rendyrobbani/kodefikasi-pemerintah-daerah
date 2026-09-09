@@ -117,6 +117,7 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 
 							$intoEntity->setCreatedAt($peraturan->penetapan());
 							$intoEntity->setCreatedBy($peraturan->referensi());
+							$intoEntity->setIsUpdated(true);
 							$intoEntity->setIsDeleted(false);
 
 							if ($peraturan === Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90) {
@@ -204,7 +205,8 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 						}
 
 						if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
-							if (!$intoEntity->isEqual($fromEntity)) {
+							$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
+							if ($intoEntity->isUpdated()) {
 								$intoEntity->setCreatedAt($fromEntity->createdAt());
 								$intoEntity->setCreatedBy($fromEntity->createdBy());
 								$intoEntity->setUpdatedAt($peraturan->penetapan());
@@ -213,17 +215,13 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 								if ($intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
 									$intoEntity->setKeterangan($fromEntity->keterangan());
 								}
-
-								$updateIds[] = $intoEntity->id();
 							}
-
 							unset($fromEntities[$intoEntity->id()]);
-						} else {
-							$updateIds[] = $intoEntity->id();
 						}
 
 						$lastId = $intoEntity->id();
-						$intoEntities[$intoEntity->id()] = $intoEntity;
+						if ($intoEntity->isUpdated() && !in_array($lastId, $updateIds)) $updateIds[] = $lastId;
+						$intoEntities[$lastId] = $intoEntity;
 
 						unset($intoEntity);
 					}

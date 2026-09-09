@@ -36,6 +36,8 @@ class FungsiEntity
 	#[Column]
 	protected string|null $createdBy = null;
 
+	protected bool|null $isUpdated = false;
+
 	#[Column(type: "date")]
 	protected string|null $updatedAt = null;
 
@@ -155,6 +157,11 @@ class FungsiEntity
 		return $this->createdBy;
 	}
 
+	public function isUpdated(): bool|null
+	{
+		return $this->isUpdated === true;
+	}
+
 	public function updatedAt(): string|null
 	{
 		return $this->updatedAt;
@@ -203,6 +210,11 @@ class FungsiEntity
 	public function setCreatedBy(string|null $createdBy): void
 	{
 		$this->createdBy = $createdBy;
+	}
+
+	public function setIsUpdated(bool|null $isUpdated): void
+	{
+		$this->isUpdated = $isUpdated === true;
 	}
 
 	public function setUpdatedAt(string|null $updatedAt): void

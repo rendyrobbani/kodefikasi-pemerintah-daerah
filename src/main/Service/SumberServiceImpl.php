@@ -103,6 +103,7 @@ class SumberServiceImpl implements SumberService
 
 							$intoEntity->setCreatedAt($peraturan->penetapan());
 							$intoEntity->setCreatedBy($peraturan->referensi());
+							$intoEntity->setIsUpdated(true);
 							$intoEntity->setIsDeleted(false);
 						}
 
@@ -179,7 +180,8 @@ class SumberServiceImpl implements SumberService
 						}
 
 						if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
-							if (!$intoEntity->isEqual($fromEntity)) {
+							$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
+							if ($intoEntity->isUpdated()) {
 								$intoEntity->setCreatedAt($fromEntity->createdAt());
 								$intoEntity->setCreatedBy($fromEntity->createdBy());
 								$intoEntity->setUpdatedAt($peraturan->penetapan());
@@ -188,17 +190,13 @@ class SumberServiceImpl implements SumberService
 								if ($intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
 									$intoEntity->setKeterangan($fromEntity->keterangan());
 								}
-
-								$updateIds[] = $intoEntity->id();
 							}
-
 							unset($fromEntities[$intoEntity->id()]);
-						} else {
-							$updateIds[] = $intoEntity->id();
 						}
 
 						$lastId = $intoEntity->id();
-						$intoEntities[$intoEntity->id()] = $intoEntity;
+						if ($intoEntity->isUpdated() && !in_array($lastId, $updateIds)) $updateIds[] = $lastId;
+						$intoEntities[$lastId] = $intoEntity;
 
 						unset($intoEntity);
 					}
