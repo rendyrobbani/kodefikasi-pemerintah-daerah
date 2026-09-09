@@ -3,6 +3,7 @@
 namespace RendyRobbani\Kodefikasi\Pemda\Service;
 
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use RendyRobbani\Kodefikasi\Pemda\Comparator\StringComparator;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanProvinsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Exception\BidangExistsException;
@@ -120,6 +121,12 @@ class UrusanProvinsiServiceImpl implements UrusanProvinsiService
 							$intoEntity->setCreatedBy($peraturan->referensi());
 							$intoEntity->setIsUpdated(true);
 							$intoEntity->setIsDeleted(false);
+
+							switch ($peraturan) {
+								case Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90:
+									$this->handlePermendagriTahun2019Nomor90($row, $excel_file, $intoEntity);
+									break;
+							}
 						}
 
 						if (!isset($intoEntity)) continue;
@@ -270,5 +277,9 @@ class UrusanProvinsiServiceImpl implements UrusanProvinsiService
 
 			throw $exception;
 		}
+	}
+
+	private function handlePermendagriTahun2019Nomor90(Row $row, string $excel_file, UrusanProvinsiEntity $entity): void
+	{
 	}
 }

@@ -3,6 +3,7 @@
 namespace RendyRobbani\Kodefikasi\Pemda\Service;
 
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use RendyRobbani\Kodefikasi\Pemda\Comparator\StringComparator;
 use RendyRobbani\Kodefikasi\Pemda\Entity\SumberEntity;
 use RendyRobbani\Kodefikasi\Pemda\Exception\RekeningExistsException;
@@ -106,6 +107,12 @@ class SumberServiceImpl implements SumberService
 							$intoEntity->setCreatedBy($peraturan->referensi());
 							$intoEntity->setIsUpdated(true);
 							$intoEntity->setIsDeleted(false);
+
+							switch ($peraturan) {
+								case Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90:
+									$this->handlePermendagriTahun2019Nomor90($row, $excel_file, $intoEntity);
+									break;
+							}
 						}
 
 						if (!isset($intoEntity)) continue;
@@ -247,5 +254,9 @@ class SumberServiceImpl implements SumberService
 
 			throw $exception;
 		}
+	}
+
+	private function handlePermendagriTahun2019Nomor90(Row $row, mixed $excel_file, SumberEntity $entity): void
+	{
 	}
 }
