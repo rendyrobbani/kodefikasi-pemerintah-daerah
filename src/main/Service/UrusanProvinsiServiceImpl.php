@@ -150,6 +150,36 @@ class UrusanProvinsiServiceImpl implements UrusanProvinsiService
 						if (!isset($intoEntity)) continue;
 
 						if ($is_perubahan) {
+							if ($peraturan === Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889) {
+								if (preg_match("/^(\d+).(\d+).(\d+).([3-9]).(\d+).(\d+)$/", $intoEntity->id(), $matches)) {
+									$kegiatanListID = array_values(array_slice($matches, 1, 5));
+									$kegiatanID = implode("-", $kegiatanListID);
+									if (!isset($intoEntities[$kegiatanID]) && !isset($fromEntities[$kegiatanID])) {
+										$kegiatanListID[3] = 1;
+										$kegiatanID = implode("-", $kegiatanListID);
+										if (isset($intoEntities[$kegiatanID])) {
+											$tempEntity = $intoEntities[$kegiatanID];
+											$tempEntity->setNomorKegiatan1($intoEntity->nomorKegiatan1());
+											$intoEntities[$tempEntity->id()] = $tempEntity;
+										}
+									}
+								}
+
+								switch ($intoEntity->kode($peraturan)) {
+									case "X.XX.01": // PROGRAM PENUNJANG URUSAN PEMERINTAHAN DAERAH PROVINSI
+									case "1.05.02": // PROGRAM PENINGKATAN KETENTERAMAN DAN KETERTIBAN UMUM
+										$listFromID = explode("-", $intoEntity->id());
+										for ($i = 1; $i < sizeof($listFromID); $i++) {
+											$fromID = implode("-", array_slice($listFromID, 0, $i));
+											if (!isset($intoEntities[$fromID]) && isset($fromEntities[$fromID])) {
+												$intoEntities[$fromID] = $fromEntities[$fromID];
+												unset($fromEntities[$fromID]);
+											}
+										}
+										break;
+								}
+							}
+
 							$levelEntity = sizeof(explode("-", $intoEntity->id()));
 							$levelEntity = match ($levelEntity) {
 								5, 6 => $levelEntity - 1,
@@ -229,12 +259,15 @@ class UrusanProvinsiServiceImpl implements UrusanProvinsiService
 					$intoEntity->setCreatedBy($fromEntity->createdBy());
 					$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
 					if ($intoEntity->isUpdated()) {
-						$intoEntity->setUpdatedAt($peraturan->penetapan());
-						$intoEntity->setUpdatedBy($peraturan->referensi());
-
 						if (StringComparator::isEqual($fromEntity->nama(), $intoEntity->nama()) &&
 							$intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
 							$intoEntity->setKeterangan($fromEntity->keterangan());
+						}
+
+						$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
+						if ($intoEntity->isUpdated()) {
+							$intoEntity->setUpdatedAt($peraturan->penetapan());
+							$intoEntity->setUpdatedBy($peraturan->referensi());
 						}
 					}
 					unset($fromEntities[$intoEntity->id()]);
@@ -332,6 +365,27 @@ class UrusanProvinsiServiceImpl implements UrusanProvinsiService
 
 	private function handleKepmendagriTahun2021(Row $row, string $excel_file, UrusanProvinsiEntity $entity): void
 	{
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "B-00037-00336.xlsx") {
+			switch ($row->getRowIndex()) {
+				case 416:
+					$entity->setNomorUrusan(1);
+					break;
+				case 2586:
+					$entity->setNomorProgram(4);
+					break;
+				case 2686:
+					$entity->setNomorKegiatan1(1);
+					break;
+				case 2921:
+					$entity->setNomorUrusan(3);
+					$entity->setNomorBidang(28);
+					break;
+				case 3395:
+				case 3523:
+					$entity->setNomorKegiatan2(3);
+					break;
+			}
+		}
 	}
 
 	private function handleKepmendagriTahun2023(Row $row, string $excel_file, UrusanProvinsiEntity $entity): void

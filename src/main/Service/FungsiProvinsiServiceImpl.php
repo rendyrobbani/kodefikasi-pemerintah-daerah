@@ -165,7 +165,10 @@ class FungsiProvinsiServiceImpl implements FungsiProvinsiService
 								if (preg_match("/^01\.01\.X(\.XX)?$/", $kode)) break;
 
 								if ($level < $levelEntity && !isset($intoEntities[$ID])) {
-									if ($peraturan === Peraturan::KEPMENDAGRI_TAHUN_2020_NOMOR_050_3708 && $kode === "10.04") {
+									if (in_array($peraturan, [
+										Peraturan::KEPMENDAGRI_TAHUN_2020_NOMOR_050_3708,
+										Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889,
+										]) && $kode === "10.04") {
 										$tempEntity = new FungsiProvinsiEntity();
 										$tempEntity->setNomorFungsi($intoEntity->nomorFungsi());
 										$tempEntity->setNomorSubfungsi($intoEntity->nomorSubfungsi());

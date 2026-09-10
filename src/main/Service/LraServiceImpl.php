@@ -213,17 +213,27 @@ class LraServiceImpl implements LraService
 			}
 
 			foreach ($intoEntities as $ID => $intoEntity) {
+				if ($intoEntity->keterangan() !== null) {
+					$intoEntity->setKeterangan(trim($intoEntity->keterangan()));
+					if ($intoEntity->keterangan() !== "" &&
+						!str_ends_with($intoEntity->keterangan(), ".")) 
+						$intoEntity->setKeterangan(trim($intoEntity->keterangan()) . ".");
+					if (str_ends_with($intoEntity->keterangan(), " .")) $intoEntity->setKeterangan(substr($intoEntity->keterangan(), 0, strlen($intoEntity->keterangan()) - 2) . ".");
+				}
 				if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
 					$intoEntity->setCreatedAt($fromEntity->createdAt());
 					$intoEntity->setCreatedBy($fromEntity->createdBy());
 					$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
 					if ($intoEntity->isUpdated()) {
-						$intoEntity->setUpdatedAt($peraturan->penetapan());
-						$intoEntity->setUpdatedBy($peraturan->referensi());
-
 						if (StringComparator::isEqual($fromEntity->nama(), $intoEntity->nama()) &&
 							$intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
 							$intoEntity->setKeterangan($fromEntity->keterangan());
+						}
+
+						$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
+						if ($intoEntity->isUpdated()) {
+							$intoEntity->setUpdatedAt($peraturan->penetapan());
+							$intoEntity->setUpdatedBy($peraturan->referensi());
 						}
 					}
 					unset($fromEntities[$intoEntity->id()]);

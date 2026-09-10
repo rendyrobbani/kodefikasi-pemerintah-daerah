@@ -167,7 +167,8 @@ class UrusanKabupatenEntity
 
 	public function kodeProgram(): string|null
 	{
-		return $this->nomorProgram;
+		if ($this->nomorProgram === null) return null;
+		return str_pad($this->nomorProgram, 2, "0", STR_PAD_LEFT);
 	}
 
 	public function kodeKegiatan(): string|null

@@ -218,17 +218,27 @@ class NeracaServiceImpl implements NeracaService
 			}
 
 			foreach ($intoEntities as $ID => $intoEntity) {
+				if ($intoEntity->keterangan() !== null) {
+					$intoEntity->setKeterangan(trim($intoEntity->keterangan()));
+					if ($intoEntity->keterangan() !== "" &&
+						!str_ends_with($intoEntity->keterangan(), ".")) 
+						$intoEntity->setKeterangan(trim($intoEntity->keterangan()) . ".");
+					if (str_ends_with($intoEntity->keterangan(), " .")) $intoEntity->setKeterangan(substr($intoEntity->keterangan(), 0, strlen($intoEntity->keterangan()) - 2) . ".");
+				}
 				if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
 					$intoEntity->setCreatedAt($fromEntity->createdAt());
 					$intoEntity->setCreatedBy($fromEntity->createdBy());
 					$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
 					if ($intoEntity->isUpdated()) {
-						$intoEntity->setUpdatedAt($peraturan->penetapan());
-						$intoEntity->setUpdatedBy($peraturan->referensi());
-
 						if (StringComparator::isEqual($fromEntity->nama(), $intoEntity->nama()) &&
 							$intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
 							$intoEntity->setKeterangan($fromEntity->keterangan());
+						}
+
+						$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
+						if ($intoEntity->isUpdated()) {
+							$intoEntity->setUpdatedAt($peraturan->penetapan());
+							$intoEntity->setUpdatedBy($peraturan->referensi());
 						}
 					}
 					unset($fromEntities[$intoEntity->id()]);
@@ -525,6 +535,74 @@ class NeracaServiceImpl implements NeracaService
 
 	private function handleKepmendagriTahun2021(Row $row, string $excel_file, NeracaEntity $entity): void
 	{
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-00961-01260.xlsx") {
+			if ($row->getRowIndex() >= 425 && $row->getRowIndex() < 3237) {
+				$entity->setNomorRekening1(1);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(2);
+				$entity->setNomorRekening5(5);
+			}
+			if ($row->getRowIndex() >= 5291 && $row->getRowIndex() < 8508) {
+				$entity->setNomorRekening1(1);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(15);
+				$entity->setNomorRekening5(16);
+			}
+			if ($row->getRowIndex() >= 8508) {
+				$entity->setNomorRekening1(1);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(15);
+				$entity->setNomorRekening5(17);
+			}
+		}
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-01561-01860.xlsx") {
+			$entity->setNomorRekening1(1);
+			$entity->setNomorRekening2(1);
+			$entity->setNomorRekening3(10);
+			$entity->setNomorRekening4(1);
+			$entity->setNomorRekening5(4);
+		}
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-03061-03360.xlsx") {
+			if ($row->getRowIndex() >= 2225 && $row->getRowIndex() < 3771) {
+				$entity->setNomorRekening1(2);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(5);
+				$entity->setNomorRekening4(4);
+				$entity->setNomorRekening5(2);
+			}
+			if ($row->getRowIndex() >= 5590 && $row->getRowIndex() < 8825) {
+				$entity->setNomorRekening1(2);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(2);
+				$entity->setNomorRekening5(2);
+			}
+			if ($row->getRowIndex() >= 8825) {
+				$entity->setNomorRekening1(2);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(2);
+				$entity->setNomorRekening5(3);
+			}
+		}
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-03361-03660.xlsx") {
+			$entity->setNomorRekening1(2);
+			$entity->setNomorRekening2(1);
+			$entity->setNomorRekening3($row->getRowIndex() < 4563 ? 6 : 7);
+			if ($row->getRowIndex() >= 5 && $row->getRowIndex() < 1515) {
+				$entity->setNomorRekening4(2);
+				$entity->setNomorRekening5(3);
+			}
+		}
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-03661-03960.xlsx") {
+		}
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-03961-04260.xlsx") {
+		}
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-04261-04316.xlsx") {
+		}
 	}
 
 	private function handleKepmendagriTahun2023(Row $row, string $excel_file, NeracaEntity $entity): void

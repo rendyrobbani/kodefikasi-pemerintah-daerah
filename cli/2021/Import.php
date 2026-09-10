@@ -1,20 +1,22 @@
 <?php
 
+use RendyRobbani\Kodefikasi\Pemda\Entity\FungsiKabupatenEntity;
+use RendyRobbani\Kodefikasi\Pemda\Entity\FungsiProvinsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\LoEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\LraEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\NeracaEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\SumberEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanKabupatenEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanProvinsiEntity;
-use RendyRobbani\Kodefikasi\Pemda\Entity\FungsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Peraturan\Peraturan;
+use RendyRobbani\Kodefikasi\Pemda\Service\FungsiKabupatenService;
+use RendyRobbani\Kodefikasi\Pemda\Service\FungsiProvinsiService;
 use RendyRobbani\Kodefikasi\Pemda\Service\LoService;
 use RendyRobbani\Kodefikasi\Pemda\Service\LraService;
 use RendyRobbani\Kodefikasi\Pemda\Service\NeracaService;
 use RendyRobbani\Kodefikasi\Pemda\Service\SumberService;
 use RendyRobbani\Kodefikasi\Pemda\Service\UrusanKabupatenService;
 use RendyRobbani\Kodefikasi\Pemda\Service\UrusanProvinsiService;
-use RendyRobbani\Kodefikasi\Pemda\Service\FungsiService;
 use RendyRobbani\PHP\Application;
 use RendyRobbani\PHP\Connection\Connection;
 
@@ -22,18 +24,21 @@ ini_set("memory_limit", "-1");
 
 require_once __DIR__ . "/../../vendor/autoload.php";
 
+$reference = "kodefikasi_pemda_2020";
+
 Application::setConfig(__DIR__ . "/application.json");
 $connection = Application::getComponent(Connection::class);
 
-for ($i = 0; $i < 7; $i++) {
+for ($i = 0; $i < 8; $i++) {
 	$info = match ($i) {
 		0 => Application::getEntityInfo(UrusanProvinsiEntity::class),
 		1 => Application::getEntityInfo(UrusanKabupatenEntity::class),
-		2 => Application::getEntityInfo(FungsiEntity::class),
-		3 => Application::getEntityInfo(SumberEntity::class),
-		4 => Application::getEntityInfo(NeracaEntity::class),
-		5 => Application::getEntityInfo(LraEntity::class),
-		6 => Application::getEntityInfo(LoEntity::class),
+		2 => Application::getEntityInfo(FungsiProvinsiEntity::class),
+		3 => Application::getEntityInfo(FungsiKabupatenEntity::class),
+		4 => Application::getEntityInfo(SumberEntity::class),
+		5 => Application::getEntityInfo(NeracaEntity::class),
+		6 => Application::getEntityInfo(LraEntity::class),
+		7 => Application::getEntityInfo(LoEntity::class),
 	};
 
 	for ($j = 0; $j < 2; $j++) {
@@ -84,6 +89,18 @@ for ($i = 0; $i < 7; $i++) {
 		echo PHP_EOL;
 	}
 
+	for ($j = 0; $j < 2; $j++) {
+		$tableName = $info->table;
+		if ($j !== 0) $tableName .= "_log";
+
+		$sql = "insert into $connection->database.$tableName select * from $reference.$tableName";
+		echo $sql . ";";
+		echo PHP_EOL;
+		$connection->exec($sql);
+
+		echo PHP_EOL;
+	}
+
 	$excel_files = __DIR__ . "/xlsx"
 			|> scandir(...)
 			|> (fn($x) => array_map(fn($excel_file) => __DIR__ . "/xlsx/" . $excel_file, $x))
@@ -92,31 +109,35 @@ for ($i = 0; $i < 7; $i++) {
 	switch ($i) {
 		case 0:
 			$service = Application::getComponent(UrusanProvinsiService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "B"))), true);
+			$service->fromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "B"))), true);
 			break;
 		case 1:
 			$service = Application::getComponent(UrusanKabupatenService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "C"))), true);
+			$service->fromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "C"))), true);
 			break;
 		case 2:
-			$service = Application::getComponent(FungsiService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "D"))), true);
+			$service = Application::getComponent(FungsiProvinsiService::class);
+			$service->fromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "D"))), true);
 			break;
 		case 3:
-			$service = Application::getComponent(SumberService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "G"))), true);
+			$service = Application::getComponent(FungsiKabupatenService::class);
+			$service->fromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "E"))), true);
 			break;
 		case 4:
-			$service = Application::getComponent(NeracaService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "H"))), true);
+			$service = Application::getComponent(SumberService::class);
+			$service->fromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "H"))), true);
 			break;
 		case 5:
-			$service = Application::getComponent(LraService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "I"))), true);
+			$service = Application::getComponent(NeracaService::class);
+			$service->fromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "I"))), true);
 			break;
 		case 6:
+			$service = Application::getComponent(LraService::class);
+			$service->fromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "J"))), true);
+			break;
+		case 7:
 			$service = Application::getComponent(LoService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "J"))), true);
+			$service->fromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "K"))), true);
 			break;
 	}
 

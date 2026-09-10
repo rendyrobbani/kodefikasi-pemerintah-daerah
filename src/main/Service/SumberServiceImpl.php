@@ -136,6 +136,20 @@ class SumberServiceImpl implements SumberService
 						if (!isset($intoEntity)) continue;
 
 						if ($is_perubahan) {
+							if ($peraturan === Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889) {
+								switch ($intoEntity->kode($peraturan)) {
+									case "1.2.2.02": // Bantuan Keuangan
+										$listFromID = explode("-", $intoEntity->id());
+										for ($i = 1; $i < sizeof($listFromID); $i++) {
+											$fromID = implode("-", array_slice($listFromID, 0, $i));
+											if (!isset($intoEntities[$fromID]) && isset($fromEntities[$fromID])) {
+												$intoEntities[$fromID] = $fromEntities[$fromID];
+												unset($fromEntities[$fromID]);
+											}
+										}
+										break;
+								}
+							}
 							$levelEntity = sizeof(explode("-", $intoEntity->id()));
 
 							for ($level = 1; $level <= $levelEntity; $level++) {
@@ -213,17 +227,27 @@ class SumberServiceImpl implements SumberService
 			}
 
 			foreach ($intoEntities as $ID => $intoEntity) {
+				if ($intoEntity->keterangan() !== null) {
+					$intoEntity->setKeterangan(trim($intoEntity->keterangan()));
+					if ($intoEntity->keterangan() !== "" &&
+						!str_ends_with($intoEntity->keterangan(), "."))
+						$intoEntity->setKeterangan(trim($intoEntity->keterangan()) . ".");
+					if (str_ends_with($intoEntity->keterangan(), " .")) $intoEntity->setKeterangan(substr($intoEntity->keterangan(), 0, strlen($intoEntity->keterangan()) - 2) . ".");
+				}
 				if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
 					$intoEntity->setCreatedAt($fromEntity->createdAt());
 					$intoEntity->setCreatedBy($fromEntity->createdBy());
 					$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
 					if ($intoEntity->isUpdated()) {
-						$intoEntity->setUpdatedAt($peraturan->penetapan());
-						$intoEntity->setUpdatedBy($peraturan->referensi());
-
 						if (StringComparator::isEqual($fromEntity->nama(), $intoEntity->nama()) &&
 							$intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
 							$intoEntity->setKeterangan($fromEntity->keterangan());
+						}
+
+						$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
+						if ($intoEntity->isUpdated()) {
+							$intoEntity->setUpdatedAt($peraturan->penetapan());
+							$intoEntity->setUpdatedBy($peraturan->referensi());
 						}
 					}
 					unset($fromEntities[$intoEntity->id()]);

@@ -26,7 +26,7 @@ require_once __DIR__ . "/../../vendor/autoload.php";
 
 $reference = "kodefikasi_pemda_2019";
 
-Application::setConfig(__DIR__ . "/../../res/application.json");
+Application::setConfig(__DIR__ . "/application.json");
 $connection = Application::getComponent(Connection::class);
 
 for ($i = 0; $i < 8; $i++) {
