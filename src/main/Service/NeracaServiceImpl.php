@@ -61,7 +61,7 @@ class NeracaServiceImpl implements NeracaService
 							if ($lastId !== null) {
 								$intoEntity = $intoEntities[$lastId];
 								if (preg_match("/^(digu)(.+)?$/", strtolower($value))) {
-									$intoEntity->setKeterangan(ucfirst($value));
+									$intoEntity->setKeterangan(ucfirst("Digunakan" . substr($value, strpos($value, " "))));
 								} elseif ($intoEntity->keterangan() !== null) {
 									$keterangan = $intoEntity->keterangan();
 									while (str_ends_with($keterangan, ".")) $keterangan = substr($keterangan, 0, strrpos($keterangan, "."));
@@ -110,7 +110,25 @@ class NeracaServiceImpl implements NeracaService
 
 							switch ($peraturan) {
 								case Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90:
-									$this->handlePermendagriTahun2019Nomor90($row, $excel_file, $intoEntity);
+									$this->handlePermendagriTahun2019($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2020_NOMOR_050_3708:
+									$this->handleKepmendagriTahun2020($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889:
+									$this->handleKepmendagriTahun2021($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2023_NOMOR_900_1_15_5_1317:
+									$this->handleKepmendagriTahun2023($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2024_NOMOR_900_1_15_5_3406:
+									$this->handleKepmendagriTahun2024($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850:
+									$this->handleKepmendagriTahun2025($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861:
+									$this->handleKepmendagriTahun2026($row, $excel_file, $intoEntity);
 									break;
 							}
 						}
@@ -187,33 +205,35 @@ class NeracaServiceImpl implements NeracaService
 							}
 						}
 
-						if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
-							$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
-							if ($intoEntity->isUpdated()) {
-								$intoEntity->setCreatedAt($fromEntity->createdAt());
-								$intoEntity->setCreatedBy($fromEntity->createdBy());
-								$intoEntity->setUpdatedAt($peraturan->penetapan());
-								$intoEntity->setUpdatedBy($peraturan->referensi());
-
-								if (StringComparator::isEqual($fromEntity->nama(), $intoEntity->nama()) &&
-									$intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
-									$intoEntity->setKeterangan($fromEntity->keterangan());
-								}
-							}
-							unset($fromEntities[$intoEntity->id()]);
-						}
-
-						if ($peraturan === Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90 && in_array($intoEntity->id(), ["2-1-6-2-3-377", "2-1-6-2-3-724"])) {
+						if (in_array($peraturan, [Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, Peraturan::KEPMENDAGRI_TAHUN_2020_NOMOR_050_3708]) &&
+							in_array($intoEntity->id(), ["2-1-6-2-3-377", "2-1-6-2-3-724"])) {
 							$lastId = $intoEntity->id() . "|" . $intoEntity->nama();
 						} else {
 							$lastId = $intoEntity->id();
 						}
-						if ($intoEntity->isUpdated() && !in_array($lastId, $updateIds)) $updateIds[] = $lastId;
 						$intoEntities[$lastId] = $intoEntity;
-
 						unset($intoEntity);
 					}
 				}
+			}
+
+			foreach ($intoEntities as $ID => $intoEntity) {
+				if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
+					$intoEntity->setCreatedAt($fromEntity->createdAt());
+					$intoEntity->setCreatedBy($fromEntity->createdBy());
+					$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
+					if ($intoEntity->isUpdated()) {
+						$intoEntity->setUpdatedAt($peraturan->penetapan());
+						$intoEntity->setUpdatedBy($peraturan->referensi());
+
+						if (StringComparator::isEqual($fromEntity->nama(), $intoEntity->nama()) &&
+							$intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
+							$intoEntity->setKeterangan($fromEntity->keterangan());
+						}
+					}
+					unset($fromEntities[$intoEntity->id()]);
+				}
+				if ($intoEntity->isUpdated()) $updateIds[] = $ID;
 			}
 
 			foreach ($fromEntities as $entity) {
@@ -260,7 +280,7 @@ class NeracaServiceImpl implements NeracaService
 		}
 	}
 
-	private function handlePermendagriTahun2019Nomor90(Row $row, string $excel_file, NeracaEntity $entity): void
+	private function handlePermendagriTahun2019(Row $row, string $excel_file, NeracaEntity $entity): void
 	{
 		if (pathinfo($excel_file, PATHINFO_BASENAME) === "H-00393-00692.xlsx") {
 			switch ($row->getRowIndex()) {
@@ -368,5 +388,158 @@ class NeracaServiceImpl implements NeracaService
 					break;
 			}
 		}
+	}
+
+	private function handleKepmendagriTahun2020(Row $row, string $excel_file, NeracaEntity $entity): void
+	{
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-00475-00774.xlsx") {
+			switch ($row->getRowIndex()) {
+				case 3796:
+				case 3816:
+					$entity->setNomorRekening5(2);
+					break;
+				case 3801:
+					$entity->setNomorRekening5(3);
+					break;
+			}
+		}
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-00775-01074.xlsx") {
+			if ($row->getRowIndex() >= 2977 && $row->getRowIndex() < 3136) {
+				$entity->setNomorRekening1(1);
+				$entity->setNomorRekening2(3);
+				$entity->setNomorRekening3(7);
+				$entity->setNomorRekening4(3);
+				$entity->setNomorRekening5(3);
+			}
+			switch ($row->getRowIndex()) {
+				case 2652:
+				case 2655:
+				case 2658:
+					$entity->setNomorRekening5(2);
+					break;
+				case 3297:
+				case 3300:
+					$entity->setNomorRekening4(1);
+					break;
+				case 3370:
+				case 3376:
+				case 3379:
+					$entity->setNomorRekening3(6);
+					break;
+			}
+		}
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-01075-01374.xlsx") {
+			if ($row->getRowIndex() >= 5 && $row->getRowIndex() < 2945) {
+				$entity->setNomorRekening1(2);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(2);
+				$entity->setNomorRekening5(2);
+			}
+			if ($row->getRowIndex() >= 2945 && $row->getRowIndex() < 4882) {
+				$entity->setNomorRekening1(2);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(2);
+				$entity->setNomorRekening5(3);
+			}
+		}
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "I-01375-01608.xlsx") {
+			if ($row->getRowIndex() >= 5 && $row->getRowIndex() < 884) {
+				$entity->setNomorRekening1(2);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(2);
+				$entity->setNomorRekening5(3);
+			}
+			if ($row->getRowIndex() >= 1517 && $row->getRowIndex() < 1672) {
+				$entity->setNomorRekening1(2);
+				$entity->setNomorRekening2(1);
+				$entity->setNomorRekening3(6);
+				$entity->setNomorRekening4(7);
+				$entity->setNomorRekening5(3);
+			}
+			switch ($row->getRowIndex()) {
+				case 1068:
+					$entity->setNomorRekening5(4);
+					break;
+				case 1258:
+				case 1382:
+				case 1585:
+				case 1844:
+				case 2097:
+				case 2216:
+				case 4223:
+					$entity->setNomorRekening6(20);
+					break;
+				case 1414:
+				case 1618:
+				case 1879:
+				case 2129:
+				case 2248:
+					$entity->setNomorRekening6(30);
+					break;
+				case 1654:
+				case 1912:
+				case 2284:
+					$entity->setNomorRekening6(40);
+					break;
+				case 1723:
+				case 1726:
+				case 1729:
+				case 1735:
+					$entity->setNomorRekening3(6);
+					break;
+				case 2180:
+				case 4112:
+				case 4188:
+					$entity->setNomorRekening6(10);
+					break;
+				case 1948:
+				case 2319:
+					$entity->setNomorRekening6(50);
+					break;
+				case 1984:
+				case 2354:
+					$entity->setNomorRekening6(60);
+					break;
+				case 2019:
+				case 2387:
+					$entity->setNomorRekening6(70);
+					break;
+				case 2423:
+					$entity->setNomorRekening6(80);
+					break;
+				case 2459:
+					$entity->setNomorRekening6(90);
+					break;
+				case 4154:
+					$entity->setNomorRekening6(2);
+					break;
+				case 4440:
+					$entity->setNomorRekening5(2);
+					break;
+			}
+		}
+	}
+
+	private function handleKepmendagriTahun2021(Row $row, string $excel_file, NeracaEntity $entity): void
+	{
+	}
+
+	private function handleKepmendagriTahun2023(Row $row, string $excel_file, NeracaEntity $entity): void
+	{
+	}
+
+	private function handleKepmendagriTahun2024(Row $row, string $excel_file, NeracaEntity $entity): void
+	{
+	}
+
+	private function handleKepmendagriTahun2025(Row $row, string $excel_file, NeracaEntity $entity): void
+	{
+	}
+
+	private function handleKepmendagriTahun2026(Row $row, string $excel_file, NeracaEntity $entity): void
+	{
 	}
 }

@@ -61,7 +61,7 @@ class LoServiceImpl implements LoService
 							if ($lastId !== null) {
 								$intoEntity = $intoEntities[$lastId];
 								if (preg_match("/^(digu)(.+)?$/", strtolower($value))) {
-									$intoEntity->setKeterangan(ucfirst($value));
+									$intoEntity->setKeterangan(ucfirst("Digunakan" . substr($value, strpos($value, " "))));
 								} elseif ($intoEntity->keterangan() !== null) {
 									$keterangan = $intoEntity->keterangan();
 									while (str_ends_with($keterangan, ".")) $keterangan = substr($keterangan, 0, strrpos($keterangan, "."));
@@ -110,7 +110,25 @@ class LoServiceImpl implements LoService
 
 							switch ($peraturan) {
 								case Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90:
-									$this->handlePermendagriTahun2019Nomor90($row, $excel_file, $intoEntity);
+									$this->handlePermendagriTahun2019($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2020_NOMOR_050_3708:
+									$this->handleKepmendagriTahun2020($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889:
+									$this->handleKepmendagriTahun2021($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2023_NOMOR_900_1_15_5_1317:
+									$this->handleKepmendagriTahun2023($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2024_NOMOR_900_1_15_5_3406:
+									$this->handleKepmendagriTahun2024($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850:
+									$this->handleKepmendagriTahun2025($row, $excel_file, $intoEntity);
+									break;
+								case Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861:
+									$this->handleKepmendagriTahun2026($row, $excel_file, $intoEntity);
 									break;
 							}
 						}
@@ -187,33 +205,35 @@ class LoServiceImpl implements LoService
 							}
 						}
 
-						if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
-							$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
-							if ($intoEntity->isUpdated()) {
-								$intoEntity->setCreatedAt($fromEntity->createdAt());
-								$intoEntity->setCreatedBy($fromEntity->createdBy());
-								$intoEntity->setUpdatedAt($peraturan->penetapan());
-								$intoEntity->setUpdatedBy($peraturan->referensi());
-
-								if (StringComparator::isEqual($fromEntity->nama(), $intoEntity->nama()) &&
-									$intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
-									$intoEntity->setKeterangan($fromEntity->keterangan());
-								}
-							}
-							unset($fromEntities[$intoEntity->id()]);
-						}
-
 						if ($peraturan === Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90 && in_array($intoEntity->id(), ["2-1-6-2-3-377", "2-1-6-2-3-724"])) {
 							$lastId = $intoEntity->id() . "|" . $intoEntity->nama();
 						} else {
 							$lastId = $intoEntity->id();
 						}
-						if ($intoEntity->isUpdated() && !in_array($lastId, $updateIds)) $updateIds[] = $lastId;
-						$intoEntities[$lastId] = $intoEntity;
 
+						$intoEntities[$lastId] = $intoEntity;
 						unset($intoEntity);
 					}
 				}
+			}
+
+			foreach ($intoEntities as $ID => $intoEntity) {
+				if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
+					$intoEntity->setCreatedAt($fromEntity->createdAt());
+					$intoEntity->setCreatedBy($fromEntity->createdBy());
+					$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
+					if ($intoEntity->isUpdated()) {
+						$intoEntity->setUpdatedAt($peraturan->penetapan());
+						$intoEntity->setUpdatedBy($peraturan->referensi());
+
+						if (StringComparator::isEqual($fromEntity->nama(), $intoEntity->nama()) &&
+							$intoEntity->keterangan() === null && $fromEntity->keterangan() !== null) {
+							$intoEntity->setKeterangan($fromEntity->keterangan());
+						}
+					}
+					unset($fromEntities[$intoEntity->id()]);
+				}
+				if ($intoEntity->isUpdated()) $updateIds[] = $ID;
 			}
 
 			foreach ($fromEntities as $entity) {
@@ -260,7 +280,7 @@ class LoServiceImpl implements LoService
 		}
 	}
 
-	private function handlePermendagriTahun2019Nomor90(Row $row, string $excel_file, LoEntity $entity): void
+	private function handlePermendagriTahun2019(Row $row, string $excel_file, LoEntity $entity): void
 	{
 		if (pathinfo($excel_file, PATHINFO_BASENAME) === "J-01764-02063.xlsx") {
 			switch ($row->getRowIndex()) {
@@ -295,5 +315,63 @@ class LoServiceImpl implements LoService
 					break;
 			}
 		}
+	}
+
+	private function handleKepmendagriTahun2020(Row $row, string $excel_file, LoEntity $entity): void
+	{
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "K-02638-02937.xlsx") {
+			switch ($row->getRowIndex()) {
+				case 4808:
+					$entity->setNomorRekening5(3);
+					break;
+				case 5099:
+				case 5102:
+				case 5105:
+				case 5107:
+				case 5112:
+				case 5115:
+				case 5118:
+				case 5120:
+				case 5123:
+				case 5128:
+				case 5131:
+				case 5133:
+				case 5136:
+				case 5139:
+					$entity->setNomorRekening1(8);
+					break;
+			}
+		}
+		if (pathinfo($excel_file, PATHINFO_BASENAME) === "K-02938-03143.xlsx") {
+			switch ($row->getRowIndex()) {
+				case 399:
+				case 401:
+					$entity->setNomorRekening5(3);
+					break;
+				case 2919:
+					$entity->setNomorRekening6(2);
+					break;
+			}
+		}
+	}
+
+	private function handleKepmendagriTahun2021(Row $row, string $excel_file, LoEntity $entity): void
+	{
+	}
+
+	private function handleKepmendagriTahun2023(Row $row, string $excel_file, LoEntity $entity): void
+	{
+	}
+
+	private function handleKepmendagriTahun2024(Row $row, string $excel_file, LoEntity $entity): void
+	{
+	}
+
+	private function handleKepmendagriTahun2025(Row $row, string $excel_file, LoEntity $entity): void
+	{
+	}
+
+	private function handleKepmendagriTahun2026(Row $row, string $excel_file, LoEntity $entity): void
+	{
 	}
 }

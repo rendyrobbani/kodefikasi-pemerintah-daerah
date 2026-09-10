@@ -14,8 +14,8 @@ class StringComparator
 		if ($a === null && $b !== null) return false;
 		if ($a !== null && $b === null) return false;
 
-		$a1 = preg_replace("/[^0-9a-z]/", "", strtolower($a));
-		$b1 = preg_replace("/[^0-9a-z]/", "", strtolower($b));
+		$a1 = preg_replace("/[^0-9a-z|]+/i", "", strtolower($a));
+		$b1 = preg_replace("/[^0-9a-z|]+/i", "", strtolower($b));
 
 		return $a1 === $b1;
 	}
