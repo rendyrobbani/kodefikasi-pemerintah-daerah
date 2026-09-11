@@ -1,0 +1,8 @@
+{
+	"database": {
+		"host": "localhost:3306",
+		"database": "kodefikasi_pemda_2023",
+		"username": "root",
+		"password": ""
+	}
+}

@@ -92,31 +92,31 @@ for ($i = 0; $i < 7; $i++) {
 	switch ($i) {
 		case 0:
 			$service = Application::getComponent(UrusanProvinsiService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "B"))), true);
+			$service->updateFromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "B"))), true);
 			break;
 		case 1:
 			$service = Application::getComponent(UrusanKabupatenService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "C"))), true);
+			$service->updateFromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "C"))), true);
 			break;
 		case 2:
 			$service = Application::getComponent(FungsiService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "D"))), true);
+			$service->updateFromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "D"))), true);
 			break;
 		case 3:
 			$service = Application::getComponent(SumberService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "G"))), true);
+			$service->updateFromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "G"))), true);
 			break;
 		case 4:
 			$service = Application::getComponent(NeracaService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "H"))), true);
+			$service->updateFromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "H"))), true);
 			break;
 		case 5:
 			$service = Application::getComponent(LraService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "I"))), true);
+			$service->updateFromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "I"))), true);
 			break;
 		case 6:
 			$service = Application::getComponent(LoService::class);
-			$service->fromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "J"))), true);
+			$service->updateFromExcelFiles(Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "J"))), true);
 			break;
 	}
 

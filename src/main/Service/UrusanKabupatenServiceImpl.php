@@ -23,19 +23,22 @@ use RendyRobbani\Kodefikasi\Pemda\Utility\SpreadsheetUtility;
 use RendyRobbani\PHP\Connection\Connection;
 use RendyRobbani\PHP\Exception\FileNotFoundException;
 
-class UrusanKabupatenServiceImpl implements UrusanKabupatenService
+class UrusanKabupatenServiceImpl extends AbstractUrusanService implements UrusanKabupatenService
 {
-	public function __construct(protected Connection                   $connection,
-	                            protected UrusanKabupatenRepository    $repository,
-	                            protected UrusanKabupatenLogRepository $logRepository)
+	public function __construct(Connection                   $connection,
+	                            UrusanKabupatenRepository    $repository,
+	                            UrusanKabupatenLogRepository $logRepository)
 	{
+		$this->connection = $connection;
+		$this->repository = $repository;
+		$this->logRepository = $logRepository;
 	}
 
 	/**
 	 * @inheritDoc
 	 * @throws \Throwable
 	 */
-	function fromExcelFiles(Peraturan $peraturan, array $excel_files, bool $is_perubahan): void
+	function updateFromExcelFiless(Peraturan $peraturan, array $excel_files, bool $delete_if_not_exists): void
 	{
 		try {
 			$this->connection->beginTransaction();
@@ -60,10 +63,10 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 						$values = SpreadsheetUtility::getCellValuesAsStringFromRow($worksheet, $row->getRowIndex(), 1, 10);
 						if ($values[0] !== null && preg_match("/^[a-wy-z].+/", strtolower($values[0]))) continue;
 
-						$notNull = SpreadsheetUtility::countNotNullColumns($values);
+						$notNull = SpreadsheetUtility::countNotNullColumnsAntNotBlank($values);
 						if ($notNull === 0) continue;
 
-						$notNull = SpreadsheetUtility::countNotNullColumns(array_slice($values, 0, 5));
+						$notNull = SpreadsheetUtility::countNotNullColumnsAntNotBlank(array_slice($values, 0, 5));
 						if ($notNull === 0) {
 							$value = trim($values[5]);
 							if ($lastId !== null) {
@@ -103,16 +106,16 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 										$intoEntity->setNomorSubkegiatan($value === null ? null : intval($value));
 										break;
 									case 6:
-										$intoEntity->setNama($value);
+										$intoEntity->setNama(in_array($intoEntity->kode($peraturan), ["X", "X.XX"]) ? null : $value);
 										break;
 									case 7:
-										$intoEntity->setKeterangan($value);
-										break;
-									case 8:
 										$intoEntity->setKinerja($value);
 										break;
-									case 9:
+									case 8:
 										$intoEntity->setIndikator($value);
+										break;
+									case 9:
+										$intoEntity->setSatuan($value);
 										break;
 								}
 							}
@@ -124,32 +127,32 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 
 							switch ($peraturan) {
 								case Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90:
-									$this->handlePermendagriTahun2019($row, $excel_file, $intoEntity);
+									$this->mappingPermendagriTahun2019($row, $excel_file, $intoEntity);
 									break;
 								case Peraturan::KEPMENDAGRI_TAHUN_2020_NOMOR_050_3708:
-									$this->handleKepmendagriTahun2020($row, $excel_file, $intoEntity);
+									$this->mappingKepmendagriTahun2020($row, $excel_file, $intoEntity);
 									break;
 								case Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889:
-									$this->handleKepmendagriTahun2021($row, $excel_file, $intoEntity);
+									$this->mappingKepmendagriTahun2021($row, $excel_file, $intoEntity);
 									break;
 								case Peraturan::KEPMENDAGRI_TAHUN_2023_NOMOR_900_1_15_5_1317:
-									$this->handleKepmendagriTahun2023($row, $excel_file, $intoEntity);
+									$this->mappingKepmendagriTahun2023($row, $excel_file, $intoEntity);
 									break;
 								case Peraturan::KEPMENDAGRI_TAHUN_2024_NOMOR_900_1_15_5_3406:
-									$this->handleKepmendagriTahun2024($row, $excel_file, $intoEntity);
+									$this->mappingKepmendagriTahun2024($row, $excel_file, $intoEntity);
 									break;
 								case Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850:
-									$this->handleKepmendagriTahun2025($row, $excel_file, $intoEntity);
+									$this->mappingKepmendagriTahun2025($row, $excel_file, $intoEntity);
 									break;
 								case Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861:
-									$this->handleKepmendagriTahun2026($row, $excel_file, $intoEntity);
+									$this->mappingKepmendagriTahun2026($row, $excel_file, $intoEntity);
 									break;
 							}
 						}
 
 						if (!isset($intoEntity)) continue;
 
-						if ($is_perubahan) {
+						if ($delete_if_not_exists) {
 							if ($peraturan === Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889) {
 								if (preg_match("/^(\d+).(\d+).(\d+).([3-9]).(\d+).(\d+)$/", $intoEntity->id(), $matches)) {
 									$kegiatanListID = array_values(array_slice($matches, 1, 5));
@@ -257,6 +260,8 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 				if ($fromEntity = $fromEntities[$intoEntity->id()] ?? null) {
 					$intoEntity->setCreatedAt($fromEntity->createdAt());
 					$intoEntity->setCreatedBy($fromEntity->createdBy());
+					$intoEntity->setUpdatedAt($fromEntity->updatedAt());
+					$intoEntity->setUpdatedBy($fromEntity->updatedBy());
 					$intoEntity->setIsUpdated(!$intoEntity->isEqual($fromEntity));
 					if ($intoEntity->isUpdated()) {
 						if (StringComparator::isEqual($fromEntity->nama(), $intoEntity->nama()) &&
@@ -331,7 +336,7 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 		}
 	}
 
-	private function handlePermendagriTahun2019(Row $row, string $excel_file, UrusanKabupatenEntity $entity): void
+	protected function mappingPermendagriTahun2019(Row $row, string $excel_file, mixed $entity): void
 	{
 		if (pathinfo($excel_file, PATHINFO_BASENAME) === "C-00189-00310.xlsx") {
 			switch ($row->getRowIndex()) {
@@ -346,7 +351,7 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 		}
 	}
 
-	private function handleKepmendagriTahun2020(Row $row, string $excel_file, UrusanKabupatenEntity $entity): void
+	protected function mappingKepmendagriTahun2020(Row $row, string $excel_file, mixed $entity): void
 	{
 		if (pathinfo($excel_file, PATHINFO_BASENAME) === "C-00208-00353.xlsx") {
 			switch ($row->getRowIndex()) {
@@ -372,7 +377,7 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 		}
 	}
 
-	private function handleKepmendagriTahun2021(Row $row, string $excel_file, UrusanKabupatenEntity $entity): void
+	protected function mappingKepmendagriTahun2021(Row $row, string $excel_file, mixed $entity): void
 	{
 		if (pathinfo($excel_file, PATHINFO_BASENAME) === "C-00341-00601.xlsx") {
 			switch ($row->getRowIndex()) {
@@ -389,19 +394,36 @@ class UrusanKabupatenServiceImpl implements UrusanKabupatenService
 		}
 	}
 
-	private function handleKepmendagriTahun2023(Row $row, string $excel_file, UrusanKabupatenEntity $entity): void
+	protected function beforeCheckKepmendagriTahun2021(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
-	}
+		if (preg_match("/^(\d+).(\d+).(\d+).([3-9]).(\d+).(\d+)$/", $entity->id(), $matches)) {
+			$kegiatanListID = array_values(array_slice($matches, 1, 5));
+			$kegiatanID = implode("-", $kegiatanListID);
+			if (!isset($intoEntities[$kegiatanID]) && !isset($fromEntities[$kegiatanID])) {
+				$kegiatanListID[3] = 2;
+				$kegiatanID = implode("-", $kegiatanListID);
+				if (isset($intoEntities[$kegiatanID])) {
+					$tempEntity = $intoEntities[$kegiatanID];
+					$tempEntity->setNomorKegiatan1($entity->nomorKegiatan1());
+					$intoEntities[$tempEntity->id()] = $tempEntity;
+				}
+			}
+		}
 
-	private function handleKepmendagriTahun2024(Row $row, string $excel_file, UrusanKabupatenEntity $entity): void
-	{
-	}
+		switch ($entity->kode(Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889)) {
+			case "X.XX.01": // PROGRAM PENUNJANG URUSAN PEMERINTAHAN DAERAH PROVINSI
+			case "1.05.02": // PROGRAM PENINGKATAN KETENTERAMAN DAN KETERTIBAN UMUM
+				$listFromID = explode("-", $entity->id());
+				for ($i = 1; $i < sizeof($listFromID); $i++) {
+					$fromID = implode("-", array_slice($listFromID, 0, $i));
+					if (!isset($intoEntities[$fromID]) && isset($fromEntities[$fromID])) {
+						$intoEntities[$fromID] = $fromEntities[$fromID];
+						unset($fromEntities[$fromID]);
+					}
+				}
+				break;
+		}
 
-	private function handleKepmendagriTahun2025(Row $row, string $excel_file, UrusanKabupatenEntity $entity): void
-	{
-	}
-
-	private function handleKepmendagriTahun2026(Row $row, string $excel_file, UrusanKabupatenEntity $entity): void
-	{
+		return $intoEntities;
 	}
 }

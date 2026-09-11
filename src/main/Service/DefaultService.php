@@ -9,8 +9,15 @@ interface DefaultService
 	/**
 	 * @param Peraturan $peraturan
 	 * @param string[] $excel_files
-	 * @param bool $is_perubahan
+	 * @param bool $delete_if_not_exists
 	 * @return void
 	 */
-	function fromExcelFiles(Peraturan $peraturan, array $excel_files, bool $is_perubahan): void;
+	function updateFromExcelFiles(Peraturan $peraturan, array $excel_files, bool $delete_if_not_exists): void;
+
+	/**
+	 * @param Peraturan $peraturan
+	 * @param string[] $excel_files
+	 * @return void
+	 */
+	function deleteFromExcelFiles(Peraturan $peraturan, array $excel_files): void;
 }

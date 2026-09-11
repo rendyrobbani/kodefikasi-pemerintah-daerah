@@ -76,8 +76,8 @@ final class SpreadsheetUtility
 		return $values;
 	}
 
-	public static function countNotNullColumns(array $values): int
+	public static function countNotNullColumnsAntNotBlank(array $values): int
 	{
-		return array_sum(array_map(fn($value) => $value === null ? 0 : 1, $values));
+		return array_sum(array_map(fn($value) => $value === null || $value === "" ? 0 : 1, $values));
 	}
 }
