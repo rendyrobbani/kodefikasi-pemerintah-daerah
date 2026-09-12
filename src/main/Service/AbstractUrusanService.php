@@ -2,8 +2,13 @@
 
 namespace RendyRobbani\Kodefikasi\Pemda\Service;
 
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanKabupatenEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanProvinsiEntity;
 use RendyRobbani\Kodefikasi\Pemda\Entity\UrusanProvinsiLogEntity;
@@ -608,5 +613,152 @@ abstract class AbstractUrusanService implements DefaultService
 	protected function beforeCheckUpdateKepmendagriTahun2026(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		return $intoEntities;
+	}
+
+	function exportToWorksheet(Worksheet $worksheet, Peraturan $peraturan): Worksheet
+	{
+		if ($this->repository instanceof UrusanProvinsiRepository) $worksheet->setTitle("Urusan Provinsi");
+		if ($this->repository instanceof UrusanKabupatenRepository) $worksheet->setTitle("Urusan Kabupaten/Kota");
+
+		$tahun = $peraturan->tahun();
+
+		$worksheet->getPageSetup()
+			->setPaperSize(PageSetup::PAPERSIZE_FOLIO)
+			->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
+		$worksheet->getPageMargins()
+			->setTop(SpreadsheetUtility::inch(20))
+			->setLeft(SpreadsheetUtility::inch(30))
+			->setRight(SpreadsheetUtility::inch(20))
+			->setBottom(SpreadsheetUtility::inch(25))
+			->setHeader(SpreadsheetUtility::inch(10))
+			->setFooter(SpreadsheetUtility::inch(10));
+
+		$worksheet->getColumnDimension("A")->setWidth(1 + 5);
+		$worksheet->getColumnDimension("B")->setWidth(1 + 5);
+		$worksheet->getColumnDimension("C")->setWidth(1 + 5);
+		$worksheet->getColumnDimension("D")->setWidth(1 + 6);
+		$worksheet->getColumnDimension("E")->setWidth(1 + 5);
+		$worksheet->getColumnDimension("F")->setWidth(1 + 35);
+
+		$worksheet->mergeCells([1, 1, 5, 1]);
+		$worksheet->getCell([1, 1])->setValueExplicit("KODE", DataType::TYPE_STRING);
+
+		$worksheet->mergeCells([6, 1, 6, 2]);
+		$worksheet->getCell([6, 1])->setValueExplicit("NOMENKLATUR URUSAN " . ($this->repository instanceof UrusanProvinsiRepository ? "PROVINSI" : "KABUPATEN/KOTA"), DataType::TYPE_STRING);
+
+		if ($tahun >= 2021) {
+			$worksheet->mergeCells([7, 1, 7, 2]);
+			$worksheet->getCell([7, 1])->setValueExplicit("KINERJA", DataType::TYPE_STRING);
+
+			$worksheet->mergeCells([8, 1, 8, 2]);
+			$worksheet->getCell([8, 1])->setValueExplicit("INDIKATOR", DataType::TYPE_STRING);
+
+			$worksheet->mergeCells([9, 1, 9, 2]);
+			$worksheet->getCell([9, 1])->setValueExplicit("SATUAN", DataType::TYPE_STRING);
+		}
+
+		$worksheet->getRowDimension(2)->setRowHeight(128);
+
+		for ($colNum = 1; $colNum <= 5; $colNum++) {
+			$worksheet->getCell([$colNum, 2])->setValueExplicit(match ($colNum) {
+				1 => "URUSAN/\nUNSUR",
+				2 => "BIDANG URUSAN/\nBIDANG UNSUR",
+				3 => "PROGRAM",
+				4 => "KEGIATAN",
+				5 => "SUBKEGIATAN",
+			}, DataType::TYPE_STRING);
+		}
+
+		for ($rowNum = 1; $rowNum <= 3; $rowNum++) {
+			for ($colNum = 1; $colNum <= 6; $colNum++) {
+				$worksheet->getStyle([$colNum, $rowNum])->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+				$worksheet->getStyle([$colNum, $rowNum])->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER)->setWrapText(true);
+
+				if ($rowNum === 2 && $colNum < 6) {
+					$worksheet->getStyle([$colNum, $rowNum])->getAlignment()->setTextRotation(90);
+				}
+			}
+		}
+
+		$worksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+		$entities = $this->repository->findAll();
+		$entities = array_combine(array_map(fn($entity) => $entity->kode($peraturan), $entities), $entities);
+
+		$keys = array_keys($entities);
+		usort($keys, fn($a, $b) => str_ireplace("X", "0", $a) <=> str_ireplace("X", "0", $b));
+
+		$fromRow = $worksheet->getHighestRow() + 1;
+		$rowNum = $worksheet->getHighestRow();
+
+		$isWritted = [];
+
+		foreach ($keys as $key) {
+			$explodedKey = explode(".", $key);
+			if (sizeof($explodedKey) !== 6) continue;
+
+			$urusanKey = implode(".", array_slice($explodedKey, 0, 1));
+			$bidangKey = implode(".", array_slice($explodedKey, 0, 2));
+			$programKey = implode(".", array_slice($explodedKey, 0, 3));
+			$kegiatanKey = implode(".", array_slice($explodedKey, 0, 5));
+			$subkegiatanKey = implode(".", array_slice($explodedKey, 0, 6));
+
+			if (isset($entities[$urusanKey]) &&
+				isset($entities[$bidangKey]) &&
+				isset($entities[$programKey]) &&
+				isset($entities[$kegiatanKey]) &&
+				isset($entities[$subkegiatanKey])) {
+				for ($level = 1; $level <= 5; $level++) {
+					$entityKey = match ($level) {
+						1 => $urusanKey,
+						2 => $bidangKey,
+						3 => $programKey,
+						4 => $kegiatanKey,
+						5 => $subkegiatanKey,
+					};
+					if (in_array($entityKey, $isWritted)) continue;
+					$isWritted[] = $entityKey;
+
+					$entity = $entities[$entityKey];
+
+					if ($level === 1 && $rowNum > $fromRow) $rowNum++;
+
+					$rowNum++;
+					for ($colNum = 1; $colNum <= ($tahun < 2021 ? 6 : 9); $colNum++) {
+						$value = match ($colNum) {
+							1 => $entity->kodeUrusan(),
+							2 => $entity->kodeBidang(),
+							3 => $entity->kodeProgram(),
+							4 => $entity->kodeKegiatan(),
+							5 => $entity->kodeSubkegiatan($peraturan),
+							6 => $entity->nama(),
+							7 => $entity->kinerja(),
+							8 => $entity->indikator(),
+							9 => $entity->satuan(),
+						};
+						if ($value === null || $value === "") continue;
+						$worksheet->getCell([$colNum, $rowNum])->setValueExplicit($value, DataType::TYPE_STRING);
+					}
+
+					if ($entity->keterangan() !== null && $entity->keterangan() !== "") {
+						$rowNum++;
+						$colNum = 6;
+						$worksheet->getCell([$colNum, $rowNum])->setValueExplicit($entity->keterangan(), DataType::TYPE_STRING);
+					}
+				}
+			}
+		}
+
+		$intoRow = $worksheet->getHighestRow() + 1;
+
+		for ($rowNum = $fromRow; $rowNum <= $intoRow; $rowNum++) {
+			for ($colNum = 1; $colNum <= 6; $colNum++) {
+				$style = $worksheet->getStyle([$colNum, $rowNum]);
+				$style->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+				$style->getAlignment()->setHorizontal($colNum < 6 ? Alignment::HORIZONTAL_CENTER : Alignment::HORIZONTAL_GENERAL)->setWrapText(true);
+			}
+		}
+
+		return $worksheet;
 	}
 }

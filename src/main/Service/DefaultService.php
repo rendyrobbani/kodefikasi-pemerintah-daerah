@@ -2,6 +2,7 @@
 
 namespace RendyRobbani\Kodefikasi\Pemda\Service;
 
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use RendyRobbani\Kodefikasi\Pemda\Peraturan\Peraturan;
 
 interface DefaultService
@@ -20,4 +21,11 @@ interface DefaultService
 	 * @return void
 	 */
 	function deleteFromExcelFiles(Peraturan $peraturan, array $excel_files): void;
+
+	/**
+	 * @param Worksheet $worksheet
+	 * @param Peraturan $peraturan
+	 * @return Worksheet
+	 */
+	function exportToWorksheet(Worksheet $worksheet, Peraturan $peraturan): Worksheet;
 }
