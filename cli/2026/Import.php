@@ -24,12 +24,12 @@ ini_set("memory_limit", "-1");
 
 require_once __DIR__ . "/../../vendor/autoload.php";
 
-$reference = "kodefikasi_pemda_2024";
+$reference = "kodefikasi_pemda_2025";
 
 Application::setConfig(__DIR__ . "/application.json");
 $connection = Application::getComponent(Connection::class);
 
-for ($i = 0; $i < 8; $i++) {
+for ($i = 4; $i < 8; $i++) {
 	$info = match ($i) {
 		0 => Application::getEntityInfo(UrusanProvinsiEntity::class),
 		1 => Application::getEntityInfo(UrusanKabupatenEntity::class),
@@ -109,43 +109,43 @@ for ($i = 0; $i < 8; $i++) {
 	switch ($i) {
 		case 0:
 			$service = Application::getComponent(UrusanProvinsiService::class);
-			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "B-DELETE"))));
-			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "B-UPDATE"))), false);
+			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "B-DELETE"))));
+			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "B-UPDATE"))), false);
 			break;
 		case 1:
 			$service = Application::getComponent(UrusanKabupatenService::class);
-			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "C-DELETE"))));
-			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "C-UPDATE"))), false);
+			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "C-DELETE"))));
+			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "C-UPDATE"))), false);
 			break;
 		case 2:
 			$service = Application::getComponent(FungsiProvinsiService::class);
-			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "D-DELETE"))));
-			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "D-UPDATE"))), false);
+			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "D-DELETE"))));
+			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "D-UPDATE"))), false);
 			break;
 		case 3:
 			$service = Application::getComponent(FungsiKabupatenService::class);
-			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "E-DELETE"))));
-			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "E-UPDATE"))), false);
+			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "E-DELETE"))));
+			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "E-UPDATE"))), false);
 			break;
 		case 4:
 			$service = Application::getComponent(SumberService::class);
-			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "H-DELETE"))));
-			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "H-UPDATE"))), false);
+			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "H-DELETE"))));
+			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "H-UPDATE"))), false);
 			break;
 		case 5:
 			$service = Application::getComponent(NeracaService::class);
-			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "I-DELETE"))));
-			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "I-UPDATE"))), false);
+			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "I-DELETE"))));
+			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "I-UPDATE"))), false);
 			break;
 		case 6:
 			$service = Application::getComponent(LraService::class);
-			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "J-DELETE"))));
-			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "J-UPDATE"))), false);
+			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "J-DELETE"))));
+			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "J-UPDATE"))), false);
 			break;
 		case 7:
 			$service = Application::getComponent(LoService::class);
-			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "K-DELETE"))));
-			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "K-UPDATE"))), false);
+			$service->deleteFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "K-DELETE"))));
+			$service->updateFromExcelFiles(Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861, array_values(array_filter($excel_files, fn($excel_file) => str_starts_with(pathinfo($excel_file, PATHINFO_FILENAME), "K-UPDATE"))), false);
 			break;
 	}
 

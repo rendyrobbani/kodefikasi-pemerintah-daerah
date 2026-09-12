@@ -50,4 +50,9 @@ enum Peraturan
 			self::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861 => "Perubahan Keempat atas Keputusan Menteri Dalam Negeri Nomor 050-5889 Tahun 2021 tentang Hasil Verifikasi, Validasi dan Inventarisasi Pemutakhiran Klasifikasi, Kodefikasi dan Nomenklatur Perencanaan Pembangunan dan Keuangan Daerah",
 		};
 	}
+
+	public function tahun(): int
+	{
+		return intval(substr($this->penetapan(), 0, 4));
+	}
 }

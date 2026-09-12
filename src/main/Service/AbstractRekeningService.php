@@ -27,8 +27,11 @@ use RendyRobbani\PHP\Exception\FileNotFoundException;
 abstract class AbstractRekeningService implements DefaultService
 {
 	const string SUMBER = "Sumber Dana";
+
 	const string NERACA = "Neraca";
+
 	const string LRA = "LRA";
+
 	const string LO = "LO";
 
 	protected Connection $connection;
@@ -628,12 +631,12 @@ abstract class AbstractRekeningService implements DefaultService
 	 */
 	protected function beforeCheckUpdateKepmendagriTahun2025(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
-		$listFromID = explode("-", $entity->id());
-		for ($i = 1; $i < sizeof($listFromID); $i++) {
-			$fromID = implode("-", array_slice($listFromID, 0, $i));
-			if (!isset($intoEntities[$fromID]) && isset($fromEntities[$fromID])) {
-				$intoEntities[$fromID] = $fromEntities[$fromID];
-				unset($fromEntities[$fromID]);
+		$listID = explode("-", $entity->id());
+		for ($i = 1; $i < sizeof($listID); $i++) {
+			$ID = implode("-", array_slice($listID, 0, $i));
+			if (!isset($intoEntities[$ID]) && isset($fromEntities[$ID])) {
+				$intoEntities[$ID] = $fromEntities[$ID];
+				unset($fromEntities[$ID]);
 			}
 		}
 		return $intoEntities;
@@ -647,6 +650,14 @@ abstract class AbstractRekeningService implements DefaultService
 	 */
 	protected function beforeCheckUpdateKepmendagriTahun2026(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
+		$listID = explode("-", $entity->id());
+		for ($i = 1; $i < sizeof($listID); $i++) {
+			$ID = implode("-", array_slice($listID, 0, $i));
+			if (!isset($intoEntities[$ID]) && isset($fromEntities[$ID])) {
+				$intoEntities[$ID] = $fromEntities[$ID];
+				unset($fromEntities[$ID]);
+			}
+		}
 		return $intoEntities;
 	}
 

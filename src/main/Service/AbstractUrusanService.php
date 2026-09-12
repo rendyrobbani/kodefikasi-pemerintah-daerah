@@ -345,7 +345,7 @@ abstract class AbstractUrusanService implements DefaultService
 						echo "delete from : " . pathinfo($excel_file, PATHINFO_BASENAME) . " | row : " . $row->getRowIndex() . PHP_EOL;
 
 						$ID = [];
-						$values = SpreadsheetUtility::getCellValuesAsStringFromRow($worksheet, $row->getRowIndex(), 1, 5);
+						$values = SpreadsheetUtility::getCellValuesAsStringFromRow($worksheet, $row->getRowIndex(), 1, $peraturan->tahun() < 2025 ? 5 : 1);
 						foreach ($values as $value) {
 							if ($value === null || $value === "") break;
 							if (is_float($value)) $value = round($value, 2);
