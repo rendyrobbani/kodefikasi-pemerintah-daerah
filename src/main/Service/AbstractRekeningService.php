@@ -628,6 +628,14 @@ abstract class AbstractRekeningService implements DefaultService
 	 */
 	protected function beforeCheckUpdateKepmendagriTahun2025(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
+		$listFromID = explode("-", $entity->id());
+		for ($i = 1; $i < sizeof($listFromID); $i++) {
+			$fromID = implode("-", array_slice($listFromID, 0, $i));
+			if (!isset($intoEntities[$fromID]) && isset($fromEntities[$fromID])) {
+				$intoEntities[$fromID] = $fromEntities[$fromID];
+				unset($fromEntities[$fromID]);
+			}
+		}
 		return $intoEntities;
 	}
 
