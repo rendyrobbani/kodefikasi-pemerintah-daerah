@@ -10,6 +10,50 @@ final class SpreadsheetUtility
 	{
 	}
 
+	private static function ensureUtf8(string $value): string
+	{
+		// Source bukan UTF-8 → convert dari Windows-1252
+		if (!mb_check_encoding($value, "UTF-8")) {
+			$value = mb_convert_encoding($value, "UTF-8", "Windows-1252");
+
+			return $value === false ? "" : $value;
+		}
+
+		// UTF-8 valid, tetapi kemungkinan mojibake
+		$mojibakePatterns = [
+			"â€",
+			"â€¦",
+			"â€“",
+			"â€”",
+			"â€˜",
+			"â€™",
+			"â€œ",
+			"â€",
+			"â€¢",
+			"Ã",
+			"Â",
+			"ðŸ",
+		];
+
+		foreach ($mojibakePatterns as $pattern) {
+			if (str_contains($value, $pattern)) {
+				$fixed = mb_convert_encoding($value, "Windows-1252", "UTF-8");
+
+				if ($fixed !== false) {
+					$fixed = mb_convert_encoding($fixed, "UTF-8", "Windows-1252");
+
+					if ($fixed !== false) {
+						return $fixed;
+					}
+				}
+
+				break;
+			}
+		}
+
+		return $value;
+	}
+
 	/**
 	 * @param float $mm
 	 * @return float
@@ -39,13 +83,17 @@ final class SpreadsheetUtility
 		foreach (str_split(")]}") as $separator) {
 			while (str_contains($value, " $separator")) $value = str_replace(" $separator", $separator, $value);
 		}
+
+		foreach (["‟", "„"] as $search) $value = str_replace($search, "'", $value);
+
 		$value = trim($value);
 
-		if (mb_detect_encoding($value, ["Windows-1252"], true) === "Windows-1252") {
-			$value = mb_convert_encoding($value, "UTF-8", "Windows-1252");
+		if (!mb_check_encoding($value, "UTF-8")) {
+			if (mb_check_encoding($value, "Windows-1252")) $value = mb_convert_encoding($value, "UTF-8", "Windows-1252");
 		}
 
-		$value = str_ireplace("â€¦", "...", $value);
+		$value = trim($value);
+
 		if ($value === "Dst...") $value = "Dst ...";
 
 		return $value == "" ? null : $value;

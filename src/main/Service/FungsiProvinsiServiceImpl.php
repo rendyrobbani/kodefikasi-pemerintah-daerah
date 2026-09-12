@@ -30,7 +30,7 @@ class FungsiProvinsiServiceImpl extends AbstractFungsiService implements FungsiP
 		}
 	}
 
-	protected function beforeCheckKepmendagriTahun2020(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdateKepmendagriTahun2020(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		if (preg_match("/^10\.04(.+)$/", $entity->kode()) && !isset($intoEntities["10-4"])) {
 			$tempEntity = new FungsiProvinsiEntity();

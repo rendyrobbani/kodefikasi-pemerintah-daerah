@@ -362,6 +362,17 @@ class UrusanProvinsiServiceImpl extends AbstractUrusanService implements UrusanP
 
 	protected function mappingKepmendagriTahun2021(Row $row, string $excel_file, mixed $entity): void
 	{
+//		if ($entity->id() === "1-3-10-1-1-2") {
+//			var_dump($entity->satuan());
+//			var_dump(bin2hex($entity->satuan()));
+//			var_dump(mb_check_encoding($entity->satuan(), "UTF-8"));
+//
+//			exit();
+//		}
+		if ($entity->id() === "1-1-7-1-1-12") {
+			var_dump($entity);
+			exit();
+		}
 		if (pathinfo($excel_file, PATHINFO_BASENAME) === "B-00037-00336.xlsx") {
 			switch ($row->getRowIndex()) {
 				case 416:
@@ -385,7 +396,7 @@ class UrusanProvinsiServiceImpl extends AbstractUrusanService implements UrusanP
 		}
 	}
 
-	protected function beforeCheckKepmendagriTahun2021(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdateKepmendagriTahun2021(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		if (preg_match("/^(\d+).(\d+).(\d+).([3-9]).(\d+).(\d+)$/", $entity->id(), $matches)) {
 			$kegiatanListID = array_values(array_slice($matches, 1, 5));

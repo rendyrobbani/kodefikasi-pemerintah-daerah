@@ -36,6 +36,7 @@ abstract class AbstractUrusanService implements DefaultService
 
 	function updateFromExcelFiles(Peraturan $peraturan, array $excel_files, bool $delete_if_not_exists): void
 	{
+		if (sizeof($excel_files) === 0) return;
 		try {
 			$this->connection->beginTransaction();
 
@@ -150,25 +151,25 @@ abstract class AbstractUrusanService implements DefaultService
 							for ($level = 1; $level <= $levelEntity; $level++) {
 								switch ($peraturan) {
 									case Peraturan::PERMENDAGRI_TAHUN_2019_NOMOR_90:
-										$intoEntities = $this->beforeCheckPermendagriTahun2019($fromEntities, $intoEntities, $intoEntity);
+										$intoEntities = $this->beforeCheckUpdatePermendagriTahun2019($fromEntities, $intoEntities, $intoEntity);
 										break;
 									case Peraturan::KEPMENDAGRI_TAHUN_2020_NOMOR_050_3708:
-										$intoEntities = $this->beforeCheckKepmendagriTahun2020($fromEntities, $intoEntities, $intoEntity);
+										$intoEntities = $this->beforeCheckUpdateKepmendagriTahun2020($fromEntities, $intoEntities, $intoEntity);
 										break;
 									case Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889:
-										$intoEntities = $this->beforeCheckKepmendagriTahun2021($fromEntities, $intoEntities, $intoEntity);
+										$intoEntities = $this->beforeCheckUpdateKepmendagriTahun2021($fromEntities, $intoEntities, $intoEntity);
 										break;
 									case Peraturan::KEPMENDAGRI_TAHUN_2023_NOMOR_900_1_15_5_1317:
-										$intoEntities = $this->beforeCheckKepmendagriTahun2023($fromEntities, $intoEntities, $intoEntity);
+										$intoEntities = $this->beforeCheckUpdateKepmendagriTahun2023($fromEntities, $intoEntities, $intoEntity);
 										break;
 									case Peraturan::KEPMENDAGRI_TAHUN_2024_NOMOR_900_1_15_5_3406:
-										$intoEntities = $this->beforeCheckKepmendagriTahun2024($fromEntities, $intoEntities, $intoEntity);
+										$intoEntities = $this->beforeCheckUpdateKepmendagriTahun2024($fromEntities, $intoEntities, $intoEntity);
 										break;
 									case Peraturan::KEPMENDAGRI_TAHUN_2025_NOMOR_900_1_2850:
-										$intoEntities = $this->beforeCheckKepmendagriTahun2025($fromEntities, $intoEntities, $intoEntity);
+										$intoEntities = $this->beforeCheckUpdateKepmendagriTahun2025($fromEntities, $intoEntities, $intoEntity);
 										break;
 									case Peraturan::KEPMENDAGRI_TAHUN_2026_NOMOR_900_1_861:
-										$intoEntities = $this->beforeCheckKepmendagriTahun2026($fromEntities, $intoEntities, $intoEntity);
+										$intoEntities = $this->beforeCheckUpdateKepmendagriTahun2026($fromEntities, $intoEntities, $intoEntity);
 										break;
 								}
 
@@ -325,6 +326,7 @@ abstract class AbstractUrusanService implements DefaultService
 
 	function deleteFromExcelFiles(Peraturan $peraturan, array $excel_files): void
 	{
+		if (sizeof($excel_files) === 0) return;
 		try {
 			$this->connection->beginTransaction();
 
@@ -349,7 +351,11 @@ abstract class AbstractUrusanService implements DefaultService
 							if (is_float($value)) $value = round($value, 2);
 							$value = str_replace(".", "-", $value);
 							$value = str_replace(",", "-", $value);
-							$ID[] = $value;
+							if (str_contains($value, "-")) {
+								$ID = array_merge($ID, array_map("intval", explode("-", $value)));
+							} else {
+								$ID[] = $value;
+							}
 						}
 
 						if (sizeof($ID) === 0) continue;
@@ -533,7 +539,7 @@ abstract class AbstractUrusanService implements DefaultService
 	 * @param UrusanProvinsiEntity|UrusanKabupatenEntity $entity
 	 * @return array
 	 */
-	protected function beforeCheckPermendagriTahun2019(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdatePermendagriTahun2019(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		return $intoEntities;
 	}
@@ -544,7 +550,7 @@ abstract class AbstractUrusanService implements DefaultService
 	 * @param UrusanProvinsiEntity|UrusanKabupatenEntity $entity
 	 * @return array
 	 */
-	protected function beforeCheckKepmendagriTahun2020(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdateKepmendagriTahun2020(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		return $intoEntities;
 	}
@@ -555,7 +561,7 @@ abstract class AbstractUrusanService implements DefaultService
 	 * @param UrusanProvinsiEntity|UrusanKabupatenEntity $entity
 	 * @return array
 	 */
-	protected function beforeCheckKepmendagriTahun2021(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdateKepmendagriTahun2021(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		return $intoEntities;
 	}
@@ -566,7 +572,7 @@ abstract class AbstractUrusanService implements DefaultService
 	 * @param UrusanProvinsiEntity|UrusanKabupatenEntity $entity
 	 * @return array
 	 */
-	protected function beforeCheckKepmendagriTahun2023(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdateKepmendagriTahun2023(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		return $intoEntities;
 	}
@@ -577,7 +583,7 @@ abstract class AbstractUrusanService implements DefaultService
 	 * @param UrusanProvinsiEntity|UrusanKabupatenEntity $entity
 	 * @return array
 	 */
-	protected function beforeCheckKepmendagriTahun2024(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdateKepmendagriTahun2024(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		return $intoEntities;
 	}
@@ -588,7 +594,7 @@ abstract class AbstractUrusanService implements DefaultService
 	 * @param UrusanProvinsiEntity|UrusanKabupatenEntity $entity
 	 * @return array
 	 */
-	protected function beforeCheckKepmendagriTahun2025(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdateKepmendagriTahun2025(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		return $intoEntities;
 	}
@@ -599,7 +605,7 @@ abstract class AbstractUrusanService implements DefaultService
 	 * @param UrusanProvinsiEntity|UrusanKabupatenEntity $entity
 	 * @return array
 	 */
-	protected function beforeCheckKepmendagriTahun2026(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdateKepmendagriTahun2026(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		return $intoEntities;
 	}

@@ -26,7 +26,7 @@ class SumberServiceImpl extends AbstractRekeningService implements SumberService
 	 * @param SumberEntity $entity
 	 * @return array
 	 */
-	protected function beforeCheckKepmendagriTahun2021(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdateKepmendagriTahun2021(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		switch ($entity->kode(Peraturan::KEPMENDAGRI_TAHUN_2021_NOMOR_050_5889)) {
 			case "1.2.2.02": // Bantuan Keuangan

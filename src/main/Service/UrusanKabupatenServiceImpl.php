@@ -394,7 +394,7 @@ class UrusanKabupatenServiceImpl extends AbstractUrusanService implements Urusan
 		}
 	}
 
-	protected function beforeCheckKepmendagriTahun2021(array $fromEntities, array $intoEntities, mixed $entity): array
+	protected function beforeCheckUpdateKepmendagriTahun2021(array $fromEntities, array $intoEntities, mixed $entity): array
 	{
 		if (preg_match("/^(\d+).(\d+).(\d+).([3-9]).(\d+).(\d+)$/", $entity->id(), $matches)) {
 			$kegiatanListID = array_values(array_slice($matches, 1, 5));
